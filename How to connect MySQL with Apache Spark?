@@ -1,0 +1,28 @@
+// Install MySQL connector for ubuntu using the following:
+  $sudo apt-get install libmysql-java
+
+  // the corresponding .jar file will be placed in : /usr/share/java/mysql-connector-java.jar
+
+
+//load MySQL Connector with Spark:
+
+spark-shell --jars /usr/share/java/mysql-connector-java.jar
+
+
+import org.apache.spark.sql.SQLContext
+
+val sqlcontext = new org.apache.spark.sql.SQLContext(sc)
+
+val df= sqlcontext.read.format("jdbc").option("url", "jdbc:mysql://localhost:3306/test").option("driver", "com.mysql.jdbc.Driver").option("dbtable", "osm").option("user", "hadoop").option("password", "hadoop").load()
+
+
+// display the content
+df.show()
+
+
++-----+                                                                        
+| name|
++-----+
+| sare |
+|power|
++-----+
