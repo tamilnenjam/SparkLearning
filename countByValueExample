@@ -1,0 +1,79 @@
+scala> val myList = List(5,5,5,3,3,3,3,3,4,4,2,1,1,2,3,4,5,5,3,3,2,1)
+myList: List[Int] = List(5, 5, 5, 3, 3, 3, 3, 3, 4, 4, 2, 1, 1, 2, 3, 4, 5, 5, 3, 3, 2, 1)
+
+scala> val rdd = sc.makeRDD(myList)
+rdd: org.apache.spark.rdd.RDD[Int] = ParallelCollectionRDD[13] at makeRDD at <console>:26
+
+scala> rdd.collect.foreach(println)
+5
+5
+5
+3
+3
+3
+3
+3
+4
+4
+2
+1
+1
+2
+3
+4
+5
+5
+3
+3
+2
+1
+
+scala> rdd.countByValue().foreach(println)
+(5,5)
+(1,3)
+(2,3)
+(3,8)
+(4,3)
+
+
+scala> rdd.countByValue().toSeq.sortBy(_._1).foreach(println)
+(1,3)
+(2,3)
+(3,8)
+(4,3)
+(5,5)
+
+
+
+
+userid,movieid,rating,timestamp
+--------------------------------
+196 242 3 991250949
+186 302 3 891717742
+22 377 1 878887116
+244 51 2 880606923
+166 346 1 886397596
+
+//Load Data
+val lines = sc.textFile("E:\\POCs\\ml-100k\\u.data")
+
+//Extract the data we care about (extract rating)
+val ratings = lines.map(x => x.toString().split("\t")(2))
+
+3
+3
+1
+2
+1
+
+//countByValue Action
+val results = ratings.countByValue()
+(3,2)
+(1,2)
+(2,1)
+   
+//make sorted Order
+val sortedResult = results.toSeq.sortBy(x=>x._1)
+(1,2)
+(2,1)
+(3,2)
