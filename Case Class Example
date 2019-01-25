@@ -1,0 +1,57 @@
+hdfs dfs -cat /user/cloudera/person/person.txt
+Barack,Obama,53
+George,Bush,68
+Bill,Clinton,68
+
+
+scala> import sqlContext.implicits._
+import sqlContext.implicits._
+
+scala> case class Person(first_name:String,last_name:String,age:Int)
+defined class Person
+
+scala> val p = sc.textFile("/user/cloudera/person/person.txt")
+p: org.apache.spark.rdd.RDD[String] = /user/cloudera/person/person.txt MapPartitionsRDD[1] at textFile at <console>:30
+
+
+scala> val pmap = p.map( line => line.split(","))
+pmap: org.apache.spark.rdd.RDD[Array[String]] = MapPartitionsRDD[2] at map at <console>:32
+
+
+
+scala> val personRDD = pmap.map( p => Person(p(0),p(1),p(2).toInt))
+personRDD: org.apache.spark.rdd.RDD[Person] = MapPartitionsRDD[3] at map at <console>:36
+
+
+
+
+scala> val sqlcontext = new org.apache.spark.sql.SQLContext(sc)
+sqlcontext: org.apache.spark.sql.SQLContext = org.apache.spark.sql.SQLContext@6900dc43
+
+cala> personDF.printSchema
+root
+ |-- first_name: string (nullable = true)
+ |-- last_name: string (nullable = true)
+ |-- age: integer (nullable = false)
+
+
+scala> personDF.registerTempTable("Employee")
+
+cala> personDF.printSchema
+root
+ |-- first_name: string (nullable = true)
+ |-- last_name: string (nullable = true)
+ |-- age: integer (nullable = false)
+
+
+
+
+scala> personDF.registerTempTable("Employee")
+
++----------+---------+---+
+|first_name|last_name|age|
++----------+---------+---+
+|    Barack|    Obama| 53|
+|    George|     Bush| 68|
+|      Bill|  Clinton| 68|
++----------+---------+---+
