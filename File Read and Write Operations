@@ -1,0 +1,128 @@
+Create a text file: file1
+gedit file1.txt
+ spark scala
+ scala spark hadoop
+ mapreduce hive pig spark
+ 
+
+// Create an RDD using file read
+//read a file which is located in local system (CentOS)
+
+scala> val rd1 = sc.textFile("file:///home/cloudera/Desktop/file1.txt")
+rd1: org.apache.spark.rdd.RDD[String] = file:///home/cloudera/Desktop/file1 MapPartitionsRDD[1] at textFile at <console>:27
+
+// get number of rows
+scala> rd1.count
+res0: Long = 3  
+
+// display the RDD content
+scala> rd1.collect
+res1: Array[String] = Array(spark scala, scala spark hadoop, mapreduce hive pig spark)
+
+// row by row
+scala> rd1.collect.foreach(println)
+spark scala
+scala spark hadoop
+mapreduce hive pig spark
+          
+
+// do a transformation
+// every row content will be concated with the word : " tech "
+scala> val rd2 = rd1.map (x => x + " tech ")
+rd2: org.apache.spark.rdd.RDD[String] = MapPartitionsRDD[2] at map at <console>:31
+
+// every line will be ending with tech because of the above transformation
+scala> rd2.collect.foreach(println)
+spark scala tech
+scala spark hadoop tech
+mapreduce hive pig spark tech
+
+// rd1 is root RDD which is the parent of rd2
+// we did only one transformation
+
+//Write the RDD content as text file in a disk in local system
+scala> rd2.saveAsTextFile("file:///home/cloudera/Desktop/output1")
+
+
+// output location is desktop
+[cloudera@quickstart output1]$ pwd
+/home/cloudera/Desktop/output1
+
+[cloudera@quickstart output1]$ ls -l
+total 8
+-rw-r--r-- 1 cloudera cloudera 43 Jan 18 10:35 part-00000
+-rw-r--r-- 1 cloudera cloudera 31 Jan 18 10:35 part-00001
+-rw-r--r-- 1 cloudera cloudera  0 Jan 18 10:35 _SUCCESS
+
+[cloudera@quickstart output1]$ cat part-00000
+spark scala tech
+scala spark hadoop tech
+
+[cloudera@quickstart output1]$ cat part-00001
+mapreduce hive pig spark tech
+[cloudera@quickstart output1]$
+
+We did file read operation of local file and did a transformation
+and wrote the output in local file system.
+
+// copy file1 into hdfs
+[cloudera@quickstart Desktop]$ hdfs dfs -copyFromLocal file1 /user/cloudera/file1
+
+// check it
+[cloudera@quickstart Desktop]$ hdfs dfs -ls /user/cloudera
+
+-rw-r--r--   1 cloudera cloudera         56 2019-01-18 10:38 /user/cloudera/file1
+
+
+hdfs dfs -cat /user/cloudera/file1
+ spark scala
+ scala spark hadoop
+ mapreduce hive pig spark
+
+hdfs dfs -cat hdfs://localhost/user/cloudera/file1
+ spark scala
+ scala spark hadoop
+ mapreduce hive pig spark
+
+// load hdfs file into RDD
+scala> val r1 = sc.textFile("hdfs://localhost/user/cloudera/file1")
+r1: org.apache.spark.rdd.RDD[String] = hdfs://localhost/user/cloudera/file1 MapPartitionsRDD[5] at textFile at <console>:27
+
+scala> r1.count
+res5: Long = 3
+
+scala> r1.collect.foreach(println)
+spark scala
+scala spark hadoop
+mapreduce hive pig spark
+
+// Write the output in hdfs file system
+scala> r1.saveAsTextFile("hdfs://localhost/user/cloudera/myOutput")
+
+// Display the content of myOutput folder which is located in hdfs
+hdfs dfs -ls hdfs://localhost/user/cloudera/myOutput
+Found 3 items
+-rw-r--r--   1 cloudera cloudera          0 2019-01-18 10:43 hdfs://localhost/user/cloudera/myOutput/_SUCCESS
+-rw-r--r--   1 cloudera cloudera         31 2019-01-18 10:43 hdfs://localhost/user/cloudera/myOutput/part-00000
+-rw-r--r--   1 cloudera cloudera         25 2019-01-18 10:43 hdfs://localhost/user/cloudera/myOutput/part-00001
+
+
+
+hdfs dfs -cat hdfs://localhost/user/cloudera/myOutput/part-00000
+spark scala
+scala spark hadoop
+
+
+hdfs dfs -cat hdfs://localhost/user/cloudera/myOutput/part-00001
+mapreduce hive pig spark
+
+
+
+//filter transformation
+//search for a line which contains 'scala'
+scala> val r2 = r1.filter (x => x.contains("scala"))
+r2: org.apache.spark.rdd.RDD[String] = MapPartitionsRDD[7] at filter at <console>:31
+
+scala> r2.collect.foreach(println)
+spark scala
+scala spark hadoop
