@@ -1,0 +1,35 @@
+scala> val rd1 = sc.textFile("E:\\POCs\\calllogdata.txt")
+rd1: org.apache.spark.rdd.RDD[String] = E:\POCs\calllogdata.txt MapPartitionsRDD[1] at textFile at <console>:24
+
+scala> val drop_rdd = rd1.filter ( x=> x.contains ("DROPPED"))
+drop_rdd: org.apache.spark.rdd.RDD[String] = MapPartitionsRDD[2] at filter at <console>:25
+
+scala> val pattern_status = "[A-Z]{6,7}".r
+pattern_status: scala.util.matching.Regex = [A-Z]{6,7}
+
+scala> val pattern_phnos = "[0-9]{20}".r
+pattern_phnos: scala.util.matching.Regex = [0-9]{20}
+
+
+scala> val result_rdd = drop_rdd.map { x =>
+       val status = pattern_status.findFirstIn(x).get
+       val pnos = pattern_phnos.findFirstIn(x).get
+       val ph1 = pnos.slice(0,10)
+       val ph2 = pnos.slice(10,20)
+       (status,ph1,ph2)
+       }
+result_rdd: org.apache.spark.rdd.RDD[(String, String, String)] = MapPartitionsRDD[3] at map at <console>:29
+
+
+scala> result_rdd.collect.foreach(println)
+(DROPPED,8052690057,7757919463)
+(DROPPED,9886177375,9916790556)
+(DROPPED,9876515616,4894949494)
+(DROPPED,8055645645,8478787877)
+(DROPPED,8080905609,5676236992)
+(DROPPED,9609065215,8087080806)
+(DROPPED,8979794646,5879874615)
+(DROPPED,7458456456,4564564656)
+(DROPPED,9879489494,5648947898)
+(DROPPED,7854545645,6456456456)
+(DROPPED,5755454897,9797979797)
