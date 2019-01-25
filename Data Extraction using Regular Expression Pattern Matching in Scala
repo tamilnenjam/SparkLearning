@@ -1,0 +1,34 @@
+Here is the sample code to do with Regex pattern matching data extraction technique
+
+// Input text
+scala> val line = "ec59cea2-5006-448f-a031-d5e53f33be232014-03-15 00:02:482014-03-15 00:06:05DROPPED 80526900577757919
+line: String = ec59cea2-5006-448f-a031-d5e53f33be232014-03-15 00:02:482014-03-15 00:06:05DROPPED 80526900577757919
+
+// regular expression to extract status from the line
+// status : DROPPED, SUCCESS, FAILED (A-Z :::6 or 7 characters)
+scala> val pattern_status = "[A-Z]{6,7}".r
+pattern_status: scala.util.matching.Regex = [A-Z]{6,7}
+
+// extract status from the given line of text
+scala> val status = pattern_status.findFirstIn(line).get
+status: String = DROPPED
+
+// regular expression to extract  2 different phone numbers from the line
+//phnos : Continuous 20 digits
+scala> val pattern_phnos = "[0-9]{20}".r
+pattern_phnos: scala.util.matching.Regex = [0-9]{20}
+
+scala> val pnos = pattern_phnos.findFirstIn(line).get
+pnos: String = 80526900577757919463
+
+// get first 10 digits
+scala> val ph1 = pnos.slice(0,10)
+ph1: String = 8052690057
+
+// get last 10 digits
+scala> val ph2 = pnos.slice(10,20)
+ph2: String = 7757919463
+
+// make a tuple
+scala> (status,ph1,ph2)
+res0: (String, String, String) = (DROPPED,8052690057,7757919463)
