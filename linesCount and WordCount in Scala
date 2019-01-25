@@ -1,0 +1,24 @@
+package com.spark.scala.learning
+import scala.io.Source
+object LinesWordsCount {
+  def main(args: Array[String]): Unit = {
+    var file = Source.fromFile("D:\\iEd\\sample.txt")
+    var countL = 0
+
+    for (i <- 0 to file.getLines().length - 1) {
+      countL = countL + 1
+    }
+    file.close()
+
+    file = Source.fromFile("D:\\iEd\\sample.txt")
+    var countW = 0
+    for (j <- file.getLines()) {
+      countW = countW + j.split("").size
+    }
+    println("The Number of Lines : " + countL)
+    println("The Number of words : " + countW)
+  }
+}
+
+The Number of Lines : 4
+The Number of words : 91
