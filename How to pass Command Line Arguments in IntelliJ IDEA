@@ -1,0 +1,31 @@
+package com.spark.learning
+
+import org.apache.spark.{SparkConf, SparkContext}
+object demo {
+  def main(args: Array[String]): Unit = {
+    val inputPath = args(0)  // command line argument 0
+    val outputPath = args(1) // command line argument 1
+    val conf = new SparkConf()
+    conf.set("spark.master", "local")
+    conf.set("spark.app.name", "sampleApp")
+
+    val sc = new SparkContext(conf)
+    val rd1 = sc.textFile(inputPath)
+    rd1.collect.foreach(println)
+    rd1.saveAsTextFile(outputPath)
+    sc.stop()
+  }
+  }
+
+// Here we have got 2 different arguments such as args(0), args(1)
+val inputPath = args(0)  // command line argument 0
+val outputPath = args(1) // command line argument 1
+
+How to pass command line arguments's values in IntelliJ IDEA?
+
+Run - Edit Configurations - Application - Demo - Configuration -
+        - Program Arguments - Right click there - Insert path  (Ctrl + F)
+        - "E:\IQ mine.txt" "D:\iEd\sara\"
+       first argument "E:\IQ mine.txt"  is input path
+       2nd argument "D:\iEd\sara\" is output path
+Space as a separator.
