@@ -94,7 +94,6 @@ id	dept	salary
 101	testing	3000
 102	dev	4000
 103	hr	3500
-104	mktg    4000^C
 
 scala> val dfEmployee = sqlContext.read.format("csv").option("header","true").option("inferSchema","true").load("/home/hadoop/Desktop/employee.csv")
 
