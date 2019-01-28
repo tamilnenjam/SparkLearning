@@ -1,0 +1,9 @@
+How to access Windows Shared folder contents within Virtual Box?
+
+  Install : Insert Guest Additions CD Image
+
+  Devices - Network  - Network Settings - Shared Folders - Add (+) - select windows shared folder location
+
+  Open Terminal within Linux
+
+  sudo mount -t vboxsf vow vow
