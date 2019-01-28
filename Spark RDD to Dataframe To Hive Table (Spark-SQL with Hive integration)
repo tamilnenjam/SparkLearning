@@ -134,12 +134,17 @@ res6: org.apache.spark.sql.DataFrame = []
 
 // fetching Hive table info within Spark
 scala> spark.sql("select * from outstanding").show
-+---+-------+
-|age|   name|
-+---+-------+
-| 28|   John|
-| 28| Andrew|
-| 22| Clarke|
-| 42|  Kevin|
-| 51|Richard|
-+---+-------+
++------------+-----+                                                            
+|   ipAddress|count|
++------------+-----+
+|12.38.140.62|    3|
+|19.31.140.62|    1|
+|   3.94.78.5|    1|
+|   3.93.78.5|    1|
+|19.35.140.62|    1|
+|11.38.140.62|    1|
+|19.33.140.62|    1|
+|   3.91.78.5|    1|
+|  13.94.78.5|    1|
+|19.32.140.62|    1|
++------------+-----+
