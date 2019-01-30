@@ -1,0 +1,38 @@
+Integrating Hive with Spark
+//Start Hive and create a new Database : School and Create a new Table : Student and add 3 records
+
+hive> show databases;
+OK
+default
+Time taken: 0.832 seconds, Fetched: 1 row(s)
+hive> create database School ;
+OK
+Time taken: 0.343 seconds
+hive> use School;
+OK
+Time taken: 0.045 seconds
+hive> create table Student(id int, name varchar(50));
+OK
+Time taken: 0.685 seconds
+hive> insert into Student (id,name) values(101,'Sankar');
+insert into Student (id,name) values(102,"Zee");
+insert into Student (id,name) values(103,"Maha");
+
+hive> select * from Student;
+OK
+101	Sankar
+102	Zee
+103	Maha
+Time taken: 0.261 seconds, Fetched: 3 row(s)
+
+
+// Start Spark and do the following to access Hive Database (School), and Hive Table (Student)
+scala> spark.sql("use School")
+scala> spark.sql("select * from Student").show()
++---+------+                                                                    
+| id|  name|
++---+------+
+|101|Sankar|
+|102|   Zee|
+|103|  Maha|
++---+------+
