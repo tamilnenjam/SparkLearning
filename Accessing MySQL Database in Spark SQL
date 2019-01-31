@@ -1,0 +1,234 @@
+//Here we are going create a database, table and add some sample records in MySQL
+sudo mysql
+[sudo] password for hadoop: 
+
+mysql> create database myown;
+Query OK, 1 row affected (0.00 sec)
+
+mysql> use myown;
+Database changed
+
+mysql> create table hadoopcomponents (name varchar(20),purpose varchar(20));
+Query OK, 0 rows affected (0.44 sec)
+
+mysql> insert into hadoopcomponents values ("hdfs","storage");
+
+mysql> insert into hadoopcomponents values("sqoop","ingestion");
+Query OK, 1 row affected (0.00 sec)
+
+mysql> insert into hadoopcomponents values("flume","ingestion");
+Query OK, 1 row affected (0.02 sec)
+
+mysql> insert into hadoopcomponents values("kafka","ingestion");
+Query OK, 1 row affected (0.00 sec)
+
+mysql> insert into hadoopcomponents values("pig","processing");
+Query OK, 1 row affected (0.03 sec)
+
+mysql> insert into hadoopcomponents values("hive","processing");
+Query OK, 1 row affected (0.00 sec)
+
+mysql> insert into hadoopcomponents values("spark","processing");
+Query OK, 1 row affected (0.02 sec)
+
+mysql> insert into hadoopcomponents values("hive","datawarehousing");
+Query OK, 1 row affected (0.08 sec)
+
+mysql> insert into hadoopcomponents values("hbase","nosqldatabase");
+Query OK, 1 row affected (0.01 sec)
+
+mysql> select * from hadoopcomponents;
++-----------+-----------------+
+| name      | purpose         |
++-----------+-----------------+
+| hdfs      | storage         |
+| mapreduce | processing      |
+| sqoop     | ingestion       |
+| flume     | ingestion       |
+| kafka     | ingestion       |
+| pig       | processing      |
+| hive      | processing      |
+| spark     | processing      |
+| hive      | datawarehousing |
+| hbase     | nosqldatabase   |
++-----------+-----------------+
+10 rows in set (0.00 sec)
+
+// Here we are going to connect MySQL in Spark
+
+scala> val dfHadoopComponentsfromMySQL = spark.read.format("jdbc").
+      option("driver","com.mysql.jdbc.Driver").
+      option("url","jdbc:mysql://localhost:3306").
+      option("dbtable","myown.hadoopcomponents").
+      option("user","hadoop").
+      option("password","hadoop").
+      load()
+
+scala> dfHadoopComponentsfromMySQL.printSchema
+root
+ |-- name: string (nullable = true)
+ |-- purpose: string (nullable = true)
+
+
+
+scala> dfHadoopComponentsfromMySQL.show
+Thu Jan 31 13:53:22 IST 2019 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
++---------+---------------+
+|     name|        purpose|
++---------+---------------+
+|     hdfs|        storage|
+|mapreduce|     processing|
+|    sqoop|      ingestion|
+|    flume|      ingestion|
+|    kafka|      ingestion|
+|      pig|     processing|
+|     hive|     processing|
+|    spark|     processing|
+|     hive|datawarehousing|
+|    hbase|  nosqldatabase|
++---------+---------------+
+
+// Querying Database using Spark Dataframe syntax
+scala> dfHadoopComponentsfromMySQL.select("name").show()
++---------+
+|     name|
++---------+
+|     hdfs|
+|mapreduce|
+|    sqoop|
+|    flume|
+|    kafka|
+|      pig|
+|     hive|
+|    spark|
+|     hive|
+|    hbase|
++---------+
+
+scala> dfHadoopComponentsfromMySQL.select("*").groupBy("purpose").count().show()
++---------------+-----+                                                         
+|        purpose|count|
++---------------+-----+
+|      ingestion|    3|
+|datawarehousing|    1|
+|  nosqldatabase|    1|
+|     processing|    4|
+|        storage|    1|
++---------------+-----+
+
+scala> dfHadoopComponentsfromMySQL.filter("purpose='ingestion'").show
++-----+---------+
+| name|  purpose|
++-----+---------+
+|sqoop|ingestion|
+|flume|ingestion|
+|kafka|ingestion|
++-----+---------+
+
+scala> dfHadoopComponentsfromMySQL.filter("purpose='processing'").show
++---------+----------+
+|     name|   purpose|
++---------+----------+
+|mapreduce|processing|
+|      pig|processing|
+|     hive|processing|
+|    spark|processing|
++---------+----------+
+
+scala> dfHadoopComponentsfromMySQL.select("name").filter("purpose='processing'").show
++---------+
+|     name|
++---------+
+|mapreduce|
+|      pig|
+|     hive|
+|    spark|
++---------+
+
+
+// Here we create temp view 
+scala> dfHadoopComponentsfromMySQL.createOrReplaceTempView("components")
+
+// Here after we use pure sql in Spark SQL
+scala> spark.sql("select * from components").show()
+
++---------+---------------+
+|     name|        purpose|
++---------+---------------+
+|     hdfs|        storage|
+|mapreduce|     processing|
+|    sqoop|      ingestion|
+|    flume|      ingestion|
+|    kafka|      ingestion|
+|      pig|     processing|
+|     hive|     processing|
+|    spark|     processing|
+|     hive|datawarehousing|
+|    hbase|  nosqldatabase|
++---------+---------------+
+
+scala> spark.sql("select * from components where purpose ='ingestion'").show()
++-----+---------+
+| name|  purpose|
++-----+---------+
+|sqoop|ingestion|
+|flume|ingestion|
+|kafka|ingestion|
++-----+---------+
+
+scala> spark.sql("select * from components where purpose in('ingestion','processing')").show()
++---------+----------+
+|     name|   purpose|
++---------+----------+
+|mapreduce|processing|
+|    sqoop| ingestion|
+|    flume| ingestion|
+|    kafka| ingestion|
+|      pig|processing|
+|     hive|processing|
+|    spark|processing|
++---------+----------+
+
+scala> spark.sql("select purpose,count(purpose) from components group by purpose").show()
++---------------+--------------+                                                
+|        purpose|count(purpose)|
++---------------+--------------+
+|      ingestion|             3|
+|datawarehousing|             1|
+|  nosqldatabase|             1|
+|     processing|             4|
+|        storage|             1|
++---------------+--------------+
+
+scala> spark.sql("select purpose,count(purpose) as count from components group by purpose").show()
++---------------+-----+                                                         
+|        purpose|count|
++---------------+-----+
+|      ingestion|    3|
+|datawarehousing|    1|
+|  nosqldatabase|    1|
+|     processing|    4|
+|        storage|    1|
++---------------+-----+
+
+scala> spark.sql("select purpose,count(purpose) as count from components group by purpose order by purpose").show()
++---------------+-----+                                                         
+|        purpose|count|
++---------------+-----+
+|datawarehousing|    1|
+|      ingestion|    3|
+|  nosqldatabase|    1|
+|     processing|    4|
+|        storage|    1|
++---------------+-----+
+
+scala> spark.sql("select purpose,count(purpose) as count from components group by purpose order by purpose desc").show()
++---------------+-----+                                                         
+|        purpose|count|
++---------------+-----+
+|        storage|    1|
+|     processing|    4|
+|  nosqldatabase|    1|
+|      ingestion|    3|
+|datawarehousing|    1|
++---------------+-----+
