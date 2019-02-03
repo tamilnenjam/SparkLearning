@@ -1,0 +1,82 @@
+Input file
+employee1.json:
+---------------
+{"empid":1, "empname":"Siya", "dept":"IT", "address":{"city":"Pune","state":"Maharashtra"}, "salary":150000}
+{"empid":2, "empname":"Swayam", "dept":"HR", "address":{"city":"Bangalore", "state":"Karnataka"}, "salary":130000}
+{"empid":3, "empname":"Jeet", "dept":"IT", "address":{"city":"Mumbai","state":"Maharashtra"}, "salary":170000}
+{"empid":4, "empname":"Priya", "dept":"HR", "address":{"city":"Chennai", "state":"Tamilnadu"}, "salary":145000}
+
+
+
+hdfs dfs -copyFromLocal employee.json /user/employee1.json
+
+scala> val employeeDF = spark.read.format("json").option("inferSchema","true").load("hdfs://localhost:9000/user/employee1.json")
+employeeDF: org.apache.spark.sql.DataFrame = [address: struct<city: string, state: string>, dept: string ... 3 more fields]
+
+scala> employeeDF.printSchema
+root
+ |-- address: struct (nullable = true)
+ |    |-- city: string (nullable = true)
+ |    |-- state: string (nullable = true)
+ |-- dept: string (nullable = true)
+ |-- empid: long (nullable = true)
+ |-- empname: string (nullable = true)
+ |-- salary: long (nullable = true)
+
+
+scala> employeeDF.show
++--------------------+----+-----+-------+------+
+|             address|dept|empid|empname|salary|
++--------------------+----+-----+-------+------+
+| [Pune, Maharashtra]|  IT|    1|   Siya|150000|
+|[Bangalore, Karna...|  HR|    2| Swayam|130000|
+|[Mumbai, Maharash...|  IT|    3|   Jeet|170000|
+|[Chennai, Tamilnadu]|  HR|    4|  Priya|145000|
++--------------------+----+-----+-------+------+
+
+scala> e.select($"empname",$"address.city").show
++-------+---------+
+|empname|     city|
++-------+---------+
+|   Siya|     Pune|
+| Swayam|Bangalore|
+|   Jeet|   Mumbai|
+|  Priya|  Chennai|
++-------+---------+
+
+
+scala> e.select($"empname",$"address.city",$"address.state",$"dept",$"empid",$"empname").show
++-------+---------+-----------+----+-----+-------+
+|empname|     city|      state|dept|empid|empname|
++-------+---------+-----------+----+-----+-------+
+|   Siya|     Pune|Maharashtra|  IT|    1|   Siya|
+| Swayam|Bangalore|  Karnataka|  HR|    2| Swayam|
+|   Jeet|   Mumbai|Maharashtra|  IT|    3|   Jeet|
+|  Priya|  Chennai|  Tamilnadu|  HR|    4|  Priya|
++-------+---------+-----------+----+-----+-------+
+
+scala> e.createOrReplaceTempView("emp")
+
+scala> spark.sql("select * from emp")
+res46: org.apache.spark.sql.DataFrame = [address: struct<city: string, state: string>, dept: string ... 3 more fields]
+
+scala> spark.sql("select * from emp").show
++--------------------+----+-----+-------+------+
+|             address|dept|empid|empname|salary|
++--------------------+----+-----+-------+------+
+| [Pune, Maharashtra]|  IT|    1|   Siya|150000|
+|[Bangalore, Karna...|  HR|    2| Swayam|130000|
+|[Mumbai, Maharash...|  IT|    3|   Jeet|170000|
+|[Chennai, Tamilnadu]|  HR|    4|  Priya|145000|
++--------------------+----+-----+-------+------+
+
+
+scala> spark.sql("select empname,salary,dept,empid,address.city,address.state from emp").show
++-------+------+----+-----+---------+-----------+
+|empname|salary|dept|empid|     city|      state|
++-------+------+----+-----+---------+-----------+
+|   Siya|150000|  IT|    1|     Pune|Maharashtra|
+| Swayam|130000|  HR|    2|Bangalore|  Karnataka|
+|   Jeet|170000|  IT|    3|   Mumbai|Maharashtra|
+|  Priya|145000|  HR|    4|  Chennai|  Tamilnadu|
++-------+------+----+-----+---------+-----------+
