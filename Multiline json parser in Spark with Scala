@@ -1,0 +1,58 @@
+hdfs dfs -copyFromLocal myInput.json /user/
+
+hdfs dfs -cat /user/myInput.json
+[{
+"Year": "2013",
+"First Name": "JANE",
+"County": "A",
+"Sex": "F",
+"Count": "27"
+}, {
+"Year": "2013",
+"First Name": "JADE",
+"County": "B",
+"Sex": "M",
+"Count": "26"
+}, {
+"Year": "2013",
+"First Name": "JAMES",
+"County": "C",
+"Sex": "M",
+"Count": "21"
+}]
+
+
+scala> import org.apache.spark.sql.SQLContext
+import org.apache.spark.sql.SQLContext
+
+scala> val sqlContext = new SQLContext(sc)
+warning: there was one deprecation warning; re-run with -deprecation for details
+sqlContext: org.apache.spark.sql.SQLContext = org.apache.spark.sql.SQLContext@3318d5ab
+
+scala> val rdd1 = sc.wholeTextFiles("hdfs://localhost:9000/user/myInput.json").map(x => x._2)
+rdd1: org.apache.spark.rdd.RDD[String] = MapPartitionsRDD[168] at map at <console>:28
+
+
+scala> val namesJson = sqlContext.read.json(rdd1)
+warning: there was one deprecation warning; re-run with -deprecation for details
+namesJson: org.apache.spark.sql.DataFrame = [Count: string, County: string ... 3 more fields]
+
+
+
+scala> namesJson.printSchema
+root
+ |-- Count: string (nullable = true)
+ |-- County: string (nullable = true)
+ |-- First Name: string (nullable = true)
+ |-- Sex: string (nullable = true)
+ |-- Year: string (nullable = true)
+
+
+scala> namesJson.show
++-----+------+----------+---+----+
+|Count|County|First Name|Sex|Year|
++-----+------+----------+---+----+
+|   27|     A|      JANE|  F|2013|
+|   26|     B|      JADE|  M|2013|
+|   21|     C|     JAMES|  M|2013|
++-----+------+----------+---+----+
