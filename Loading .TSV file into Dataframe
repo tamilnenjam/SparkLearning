@@ -38,6 +38,7 @@ hadoop@hadoop:~/Desktop/vow$ hdfs dfs -head /user/olympic/olympic_data.tsv
 	/m/04dq76v	Robert Newbery	Australia	2004 Summer Olympics	
 	/m/04dq7m3	Dorothy Poynton-Hill	United States of America	1928 
 	
+// Here we specified \t as delimiter.	
 scala> val df = spark.read.format("csv").option("delimiter","\t").load("hdfs://localhost:9000/user/olympic/olympic_data.tsv")
 df: org.apache.spark.sql.DataFrame = [_c0: string, _c1: string ... 4 more fields]
 
