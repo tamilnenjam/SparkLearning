@@ -1,0 +1,114 @@
+// Here we are goint load .TSV (Tab Separated Values) file into Spark Dataframe
+Input 
+olympic_data.csv:
+------------------
+hdfs dfs -tail /user/olympic/olympic_data.tsv
+
+
+	012 Summer Olympics	Track and field athletics
+	/m/0kcf2z8	Sarah Thomas	United Kingdom	2012 Summer Olympics	Field hockey
+	/m/0kjvkrz	Ayako Kimura	Japan	2012 Summer Olympics	Track and field athletics
+	/m/0k8mdqc	Caitlin McClatchey	United Kingdom	2012 Summer Olympics	Swimming
+	/m/0kgys19	Qiushuang Huang	China	2012 Summer Olympics	Artistic gymnastics
+	/m/0kf7s9h	Joris Daudet	France	2012 Summer Olympics	BMX racing
+	/m/0k8m99s	Sören Ludolph	Germany	2012 Summer Olympics	Track and field athletics
+	/m/0kf5y7n	Luke Hall	Swaziland	2012 Summer Olympics	Swimming
+	/m/0kf89j5	Kamil Kuczyński	Poland	2012 Summer Olympics	Track cycling
+	/m/0k8rdtm	Brian Alexander	United States of America	2012 Summer Olympics	Water polo
+	/m/0kcfflq	Allan Gutierrez Castro	Honduras	2012 Summer Olympics	Swimming
+	/m/0kgk7gc	Antanas Kavaliauskas	Lithuania	2012 Summer Olympics	Basketball
+	/m/0k8qy5s	Martin Elmiger	Switzerland	2012 Summer Olympics	Road cycling
+	/m/0k8mwlh	Nikoleta Kyriakopoulou	Greece	2012 Summer Olympics	Track and field athletics
+	
+	
+hadoop@hadoop:~/Desktop/vow$ hdfs dfs -head /user/olympic/olympic_data.tsv
+	/m/0htv8b9	Peter Scott	United Kingdom	1936 Summer Olympics	Sailing
+	/m/0gx95xy	Todd Rogers	United States of America	2008 Summer Olympics	Beach volleyball
+	/m/04f9ctt	Rebecca Snyder	United States of America	2008 Summer Olympics	Shooting sports
+	/m/04g58y5	Joshua Riker-Fox	Canada	2008 Summer Olympics	Modern pentathlon
+	/m/04dq8w6	Gustaf Blomgren	Sweden	1912 Summer Olympics	
+	/m/04dnlz2	Rachael Sporn	Australia		
+	/m/04g57vj	Aaron Feltham	Canada	2008 Summer Olympics	Water polo
+	/m/04gcwjm	Chris Huffins	United States of America	2000 Summer Olympics	Track and field athletics
+	/m/04g59jg	Paul tichelaar	Canada	2008 Summer Olympics	Triathlon
+	/m/04g58zq	Kara Lang	Canada	2008 Summer Olympics	Football
+	/m/04dq7bw	Ni Xiong	China	1992 Summer Olympics	
+	/m/04fx5k5	Romanas Brazdauskis	Lithuania		
+	/m/04dnk6t	Renita Farrell	Australia		
+	/m/04fxmzc	Blagoja Celeski	Australia	2008 Summer Olympics	Football
+	/m/04dq76v	Robert Newbery	Australia	2004 Summer Olympics	
+	/m/04dq7m3	Dorothy Poynton-Hill	United States of America	1928 
+	
+scala> val df = spark.read.format("csv").option("delimiter","\t").load("hdfs://localhost:9000/user/olympic/olympic_data.tsv")
+df: org.apache.spark.sql.DataFrame = [_c0: string, _c1: string ... 4 more fields]
+
+scala> df.printSchema
+root
+ |-- _c0: string (nullable = true)
+ |-- _c1: string (nullable = true)
+ |-- _c2: string (nullable = true)
+ |-- _c3: string (nullable = true)
+ |-- _c4: string (nullable = true)
+ |-- _c5: string (nullable = true)
+
+
+scala> df.show
++----+----------+--------------------+--------------------+--------------------+--------------------+
+| _c0|       _c1|                 _c2|                 _c3|                 _c4|                 _c5|
++----+----------+--------------------+--------------------+--------------------+--------------------+
+|null|/m/0htv8b9|         Peter Scott|      United Kingdom|1936 Summer Olympics|             Sailing|
+|null|/m/0gx95xy|         Todd Rogers|United States of ...|2008 Summer Olympics|    Beach volleyball|
+|null|/m/04f9ctt|      Rebecca Snyder|United States of ...|2008 Summer Olympics|     Shooting sports|
+|null|/m/04g58y5|    Joshua Riker-Fox|              Canada|2008 Summer Olympics|   Modern pentathlon|
+|null|/m/04dq8w6|     Gustaf Blomgren|              Sweden|1912 Summer Olympics|                null|
+|null|/m/04dnlz2|       Rachael Sporn|           Australia|                null|                null|
+|null|/m/04g57vj|       Aaron Feltham|              Canada|2008 Summer Olympics|          Water polo|
+|null|/m/04gcwjm|       Chris Huffins|United States of ...|2000 Summer Olympics|Track and field a...|
+|null|/m/04g59jg|      Paul tichelaar|              Canada|2008 Summer Olympics|           Triathlon|
+|null|/m/04g58zq|           Kara Lang|              Canada|2008 Summer Olympics|            Football|
+|null|/m/04dq7bw|            Ni Xiong|               China|1992 Summer Olympics|                null|
+|null|/m/04fx5k5| Romanas Brazdauskis|           Lithuania|                null|                null|
+|null|/m/04dnk6t|      Renita Farrell|           Australia|                null|                null|
+|null|/m/04fxmzc|     Blagoja Celeski|           Australia|2008 Summer Olympics|            Football|
+|null|/m/04dq76v|      Robert Newbery|           Australia|2004 Summer Olympics|                null|
+|null|/m/04dq7m3|Dorothy Poynton-Hill|United States of ...|1928 Summer Olympics|                null|
+|null|/m/04f9czp|        Vic Wunderle|United States of ...|2008 Summer Olympics|             Archery|
+|null|/m/04f9d2m|       Lori Chalupny|United States of ...|2008 Summer Olympics|            Football|
+|null|/m/04f99ds|        Karl Molitor|                null|1948 Winter Olympics|                null|
+|null|/m/04gd7ny|    Magnus Petersson|              Sweden|2008 Summer Olympics|             Archery|
++----+----------+--------------------+--------------------+--------------------+--------------------+
+only showing top 20 rows
+
+
+scala> df2.count
+res96: Long = 29238                                                             
+
+
+//_c0 column unique values 
+scala> df.select("_c0").distinct.show
++----+                                                                          
+| _c0|
++----+
+|null|
++----+
+
+//_c0 column doesn't have anything. so we are dropping it
+
+
+scala> val df1 = df.drop("_c0")
+df1: org.apache.spark.sql.DataFrame = [_c1: string, _c2: string ... 3 more fields]
+
+
+scala> df1.show(3)
++----------+--------------+--------------------+--------------------+----------------+
+|       _c1|           _c2|                 _c3|                 _c4|             _c5|
++----------+--------------+--------------------+--------------------+----------------+
+|/m/0htv8b9|   Peter Scott|      United Kingdom|1936 Summer Olympics|         Sailing|
+|/m/0gx95xy|   Todd Rogers|United States of ...|2008 Summer Olympics|Beach volleyball|
+|/m/04f9ctt|Rebecca Snyder|United States of ...|2008 Summer Olympics| Shooting sports|
++----------+--------------+--------------------+--------------------+----------------+
+only showing top 3 rows
+
+
+scala> df1.count
+res102: Long = 5698
