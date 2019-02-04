@@ -5,7 +5,6 @@ olympic_data.csv:
 hdfs dfs -tail /user/olympic/olympic_data.tsv
 
 
-	012 Summer Olympics	Track and field athletics
 	/m/0kcf2z8	Sarah Thomas	United Kingdom	2012 Summer Olympics	Field hockey
 	/m/0kjvkrz	Ayako Kimura	Japan	2012 Summer Olympics	Track and field athletics
 	/m/0k8mdqc	Caitlin McClatchey	United Kingdom	2012 Summer Olympics	Swimming
