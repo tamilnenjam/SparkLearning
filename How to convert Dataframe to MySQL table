@@ -1,0 +1,70 @@
+// Here we are going to export dataframe content into mysql table
+//we have a dataframe named "df"
+
+scala> df.printSchema
+root
+ |-- address: string (nullable = true)
+ |-- age: long (nullable = true)
+ |-- company: string (nullable = true)
+ |-- email: string (nullable = true)
+ |-- gender: string (nullable = true)
+ |-- id: string (nullable = true)
+ |-- isActive: boolean (nullable = true)
+ |-- name: string (nullable = true)
+ |-- phone: string (nullable = true)
+
+
+// Our dataframe has 3 records
+scala> df.show
++--------------------+---+--------+--------------------+------+--------------------+--------+---------------+-----------------+
+|             address|age| company|               email|gender|                  id|isActive|           name|            phone|
++--------------------+---+--------+--------------------+------+--------------------+--------+---------------+-----------------+
+|169 Rutledge Stre...| 36| CEDWARD|dunlaphubbard@ced...|  male|59761c23b30d97166...|    true| Dunlap Hubbard|+1 (890) 543-2508|
+|886 Gallatin Plac...| 24|EMERGENT|kirstensellers@em...|female|59761c233d8d0f92a...|    true|Kirsten Sellers|+1 (831) 564-2190|
+|697 Linden Boulev...| 30|ORGANICA|acostarobbins@org...|  male|59761c23fcb6254b1...|    true| Acosta Robbins|+1 (882) 441-3367|
++--------------------+---+--------+--------------------+------+--------------------+--------+---------------+-----------------+
+
+
+// Here we make a property configurations for credentials for MySQL
+scala> import java.util._
+import java.util._
+
+scala> val props = new Properties
+props: java.util.Properties = {}
+
+scala> props.put("driver","com.mysql.jdbc.Driver")
+res82: Object = null
+
+scala> props.put("user","hadoop")
+res83: Object = null
+
+scala> props.put("password","hadoop")
+res84: Object = null
+
+// Here we write dataframe content into MySQL database
+scala> df.write.mode("overwrite").jdbc("jdbc:mysql://localhost:3306/osm","jsondatatable",props)
+
+
+// Here I opened MySQL 
+mysql> use osm;
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Database changed
+mysql> show tables;
++---------------+
+| Tables_in_osm |
++---------------+
+| jsondatatable |
++---------------+
+1 row in set (0.00 sec)
+
+mysql> select * from jsondatatable;
++---------------------------------------------------------------+------+----------+-----------------------------+--------+--------------------------+----------+-----------------+-------------------+
+| address                                                       | age  | company  | email                       | gender | id                       | isActive | name            | phone             |
++---------------------------------------------------------------+------+----------+-----------------------------+--------+--------------------------+----------+-----------------+-------------------+
+| 169 Rutledge Street, Konterra, Northern Mariana Islands, 8551 |   36 | CEDWARD  | dunlaphubbard@cedward.com   | male   | 59761c23b30d971669fb42ff |         | Dunlap Hubbard  | +1 (890) 543-2508 |
+| 886 Gallatin Place, Fannett, Arkansas, 4656                   |   24 | EMERGENT | kirstensellers@emergent.com | female | 59761c233d8d0f92a6b0570d |         | Kirsten Sellers | +1 (831) 564-2190 |
+| 697 Linden Boulevard, Sattley, Idaho, 1035                    |   30 | ORGANICA | acostarobbins@organica.com  | male   | 59761c23fcb6254b1a06dad5 |         | Acosta Robbins  | +1 (882) 441-3367 |
++---------------------------------------------------------------+------+----------+-----------------------------+--------+--------------------------+----------+-----------------+-------------------+
+3 rows in set (0.00 sec)
