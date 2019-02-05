@@ -1,0 +1,55 @@
+Input file
+sample.txt:
+-----------
+spark is  bigdata technology
+hadoop is bigdata technology
+spark and hadoop are bigdata technologies
+
+
+
+Word count program using RDDs:
+---------------------------------
+scala> val r1 = sc.textFile("e:\\vow\\sample.txt")
+r1: org.apache.spark.rdd.RDD[String] = e:\vow\sample.txt MapPartitionsRDD[3] at textFile at <console>:24
+
+scala> r1.count
+res1: Long = 3
+
+scala> r1.collect.foreach(println)
+spark is  bigdata technology
+hadoop is bigdata technology
+spark and hadoop are bigdata technologies
+
+scala> val r2 = r1.map(x => x.split(" "))
+r2: org.apache.spark.rdd.RDD[Array[String]] = MapPartitionsRDD[4] at map at <console>:25
+
+scala> r2.take(3)
+res4: Array[Array[String]] = Array(Array(spark, is, "", bigdata, technology), Array(hadoop, is, bigdata, technology), Array(spark, and, hadoop, are, b
+igdata, technologies))
+
+scala> val r3 = r2.flatMap(x => x)
+r3: org.apache.spark.rdd.RDD[String] = MapPartitionsRDD[5] at flatMap at <console>:25
+
+scala> r3.collect
+res5: Array[String] = Array(spark, is, "", bigdata, technology, hadoop, is, bigdata, technology, spark, and, hadoop, are, bigdata, technologies)
+
+scala> val r4 = r3.map(x => (x,1))
+r4: org.apache.spark.rdd.RDD[(String, Int)] = MapPartitionsRDD[7] at map at <console>:25
+
+scala> r4.collect
+res7: Array[(String, Int)] = Array((spark,1), (is,1), ("",1), (bigdata,1), (technology,1), (hadoop,1), (is,1), (bigda
+ (and,1), (hadoop,1), (are,1), (bigdata,1), (technologies,1))
+
+scala> val r5  = r4.reduceByKey( (x,y) => (x+y))
+r5: org.apache.spark.rdd.RDD[(String, Int)] = ShuffledRDD[9] at reduceByKey at <console>:25
+
+scala> r5.collect.foreach(println)
+(technology,2)
+(are,1)
+(is,2)
+(,1)
+(bigdata,3)
+(technologies,1)
+(spark,2)
+(hadoop,2)
+(and,1)
