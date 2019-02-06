@@ -47,3 +47,29 @@ hadoop@hadoop:/$ hdfs dfs -cat hdfs://localhost:9000/user/streamingexa/ex-154943
 (all,2)
 (beautiful,2)
 (things,1)
+
+
+One more approach without stopping SparkContext:
+---------------------------------------------------------------
+hadoop@hadoop:~$ spark-shell --master local[2]
+
+import org.apache.spark.streaming._
+val ssc = new StreamingContext(sc,Seconds(15))
+val d1 = ssc.socketTextStream("localhost",1234)
+val d2 = d1.flatMap(x => x.split(" ")).map(x => (x,1)).reduceByKey( (x,y) => (x+y))
+
+d2.print()
+sc.setLogLevel("INFO")
+ssc.start()
+
+
+hadoop@hadoop:~$ nc -lk 1234
+	hadoop is batch processing
+
+
+Time: 1549458165000 ms
+-------------------------------------------
+(is,1)
+(batch,1)
+(hadoop,1)
+(processing,1)
