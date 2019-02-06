@@ -36,7 +36,7 @@ wc: org.apache.spark.streaming.dstream.DStream[(String, Int)] = org.apache.spark
 
 scala> wc.print()
 
-
+// start netcat to input some text
 hadoop@hadoop:~$ nc -lk 7890
 i love you
 you love i
@@ -44,7 +44,7 @@ i love you
 
 
 
-
+//start Spark Streaming Context
 scala>     ssc.start()
 
 -------------------------------------------                                     
