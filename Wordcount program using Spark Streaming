@@ -1,59 +1,49 @@
-scala> import org.apache.spark._
 import org.apache.spark._
-
-scala> import org.apache.spark.streaming._
 import org.apache.spark.streaming._
-
-scala> import org.apache.spark.streaming.StreamingContext._
 import org.apache.spark.streaming.StreamingContext._
-
-scala> import org.apache.log4j.Logger
 import org.apache.log4j.Logger
-
-scala> import org.apache.log4j.Level
 import org.apache.log4j.Level
 
-// we are going to reconfiture SparkConfiguration so, we stop existing SparkContext
-scala> sc.stop
+// we are going to reconfigure SparkConfiguration so, we stop existing SparkContext
+ sc.stop
+ 
+ Logger.getLogger("org").setLevel(Level.OFF)
+ Logger.getLogger("akka").setLevel(Level.OFF)
+ 
+ val conf = new SparkConf().setMaster("local[4]").setAppName("workdcount")
+ val ssc = new StreamingContext(conf,Seconds(30))
+ val data = ssc.socketTextStream("localhost",7890)
+ val wc = data.flatMap(_.split(" ")).map (x => (x,1)).reduceByKey(_+_)
+ wc.print()
+ wc.saveAsTextFiles("hdfs://localhost:9000/user/streamingexa/ex")
+ ssc.start()
+ 
+ 
+// start netcat and type something there
+hadoop@hadoop:/$ nc -lk 7890
+i love all beautiful things
+god i love all beautiful
+god i love
+god i
 
-scala> Logger.getLogger("org").setLevel(Level.OFF)
 
-scala>     Logger.getLogger("akka").setLevel(Level.OFF)
+
 
  
+ // result is written in hdfs
 
-scala>     val conf = new SparkConf().setMaster("local[4]").setAppName("workdcount")
-conf: org.apache.spark.SparkConf = org.apache.spark.SparkConf@3d5b2c1e
-
-scala>     val ssc = new StreamingContext(conf,Seconds(5))
-ssc: org.apache.spark.streaming.StreamingContext = org.apache.spark.streaming.StreamingContext@6fb3d3bb
-
-scala>     val data = ssc.socketTextStream("localhost",7890)
-data: org.apache.spark.streaming.dstream.ReceiverInputDStream[String] = org.apache.spark.streaming.dstream.SocketInputDStream@3003d288
-
-scala>     val wc = data.flatMap(_.split(" ")).map (x => (x,1)).reduceByKey(_+_)
-wc: org.apache.spark.streaming.dstream.DStream[(String, Int)] = org.apache.spark.streaming.dstream.ShuffledDStream@2a4137a2
-
-scala> wc.print()
-
-// start netcat to input some text
-hadoop@hadoop:~$ nc -lk 7890
-i love you
-you love i
-i love you
-
-
-
-//start Spark Streaming Context
-scala>     ssc.start()
-
--------------------------------------------                                     
-Time: 1549420230000 ms
--------------------------------------------
-
--------------------------------------------                                     
-Time: 1549420235000 ms
--------------------------------------------
-(i,3)
-(love,3)
-(you,3)
+hadoop@hadoop:/$ hdfs dfs -ls hdfs://localhost:9000/user/streamingexa/
+Found 1 items
+drwxr-xr-x   - hadoop supergroup          0 2019-02-06 11:12 hdfs://localhost:9000/user/streamingexa/ex-1549431720000
+hadoop@hadoop:/$ hdfs dfs -ls hdfs://localhost:9000/user/streamingexa/ex-1549431720000
+Found 5 items
+-rw-r--r--   3 hadoop supergroup          0 2019-02-06 11:12 hdfs://localhost:9000/user/streamingexa/ex-1549431720000/_SUCCESS
+-rw-r--r--   3 hadoop supergroup          8 2019-02-06 11:12 hdfs://localhost:9000/user/streamingexa/ex-1549431720000/part-00000
+-rw-r--r--   3 hadoop supergroup         39 2019-02-06 11:12 hdfs://localhost:9000/user/streamingexa/ex-1549431720000/part-00001
+-rw-r--r--   3 hadoop supergroup          9 2019-02-06 11:12 hdfs://localhost:9000/user/streamingexa/ex-1549431720000/part-00002
+-rw-r--r--   3 hadoop supergroup          0 2019-02-06 11:12 hdfs://localhost:9000/user/streamingexa/ex-1549431720000/part-00003
+hadoop@hadoop:/$ hdfs dfs -cat hdfs://localhost:9000/user/streamingexa/ex-1549431720000/part-00001
+(i,4)
+(all,2)
+(beautiful,2)
+(things,1)
