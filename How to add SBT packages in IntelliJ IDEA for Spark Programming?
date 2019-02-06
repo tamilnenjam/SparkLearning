@@ -1,0 +1,97 @@
+// Here I am describing the way to do with SBT package import operation within IntelliJ IDEA for Spark Programming.
+
+// Windows Way.
+Start - Run 
+spark-shell
+ spark   version 2.4.0
+ Scala version 2.11.12
+ Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_191
+
+//Linux way
+$ spark-shell
+ spark   version 2.4.0
+ Scala version 2.11.12
+
+
+// Kindly make a note on the above version numbers. We need to pick corresponding maven package from maven repository using the above version informations.
+
+
+
+Run IntelliJ IDEA.
+
+File - New - Project
+ Scala
+  sbt
+   -Next
+   Name : SparkSampleProgram
+   Location : E:\POCs\SparkSampleProgram
+   
+   JDK : 1.8
+   sbt : 1.2.8
+   Scala : 2.11.12  (our spark's current configuration)
+   Finish
+
+Right click the Project -> Add Framework support
+ [x] Scala
+  Use Library : Scala-sdk-2.11.12 - OK
+   
+ 
+
+ 
+do Google Search for : maven repository spark
+ Central:
+  https://mvnrepository.com/artifact/org.apache.spark/spark-core_2.11/2.4.0
+  
+ Copy the following from there..
+  SBT :
+  // https://mvnrepository.com/artifact/org.apache.spark/spark-core
+libraryDependencies += "org.apache.spark" %% "spark-core" % "2.4.0"
+
+
+ 
+
+ 
+open build.sbt and paste the above taken from maven sbt url
+-------
+name := "SparkSampleProgram"
+
+version := "0.1"
+
+scalaVersion := "2.11.12"
+// https://mvnrepository.com/artifact/org.apache.spark/spark-core
+libraryDependencies += "org.apache.spark" %% "spark-core" % "2.4.0"
+
+ 
+
+  
+Expand src - main - scala - Right click on Scala - new package
+ Enter package name : com.spark.learning
+ Expand Scala - Right click on com.spark.learning
+  new - Scala Class - Name : demo
+        - Kind : Object
+       
+ At the bottom - Enable Auto Import
+ 
+ demo.scala code:
+ ---------------
+package com.spark.learning
+
+import org.apache.spark.{SparkConf, SparkContext}
+
+object demo {
+  def main(args: Array[String]): Unit = {
+    val conf = new SparkConf()
+    conf.set("spark.master", "local")
+    conf.set("spark.app.name", "sampleApp")
+
+    val sc = new SparkContext(conf)
+    val rd1 = sc.textFile("E:\\IQ mine.txt")
+    rd1.collect.foreach(println)
+    rd1.saveAsTextFile("E:\\IQOutput")
+    sc.stop()
+  }
+}
+
+// output will be displayed in console
+
+Right click - Run demo
