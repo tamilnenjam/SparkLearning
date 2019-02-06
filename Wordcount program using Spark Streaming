@@ -1,0 +1,59 @@
+scala> import org.apache.spark._
+import org.apache.spark._
+
+scala> import org.apache.spark.streaming._
+import org.apache.spark.streaming._
+
+scala> import org.apache.spark.streaming.StreamingContext._
+import org.apache.spark.streaming.StreamingContext._
+
+scala> import org.apache.log4j.Logger
+import org.apache.log4j.Logger
+
+scala> import org.apache.log4j.Level
+import org.apache.log4j.Level
+
+// we are going to reconfiture SparkConfiguration so, we stop existing SparkContext
+scala> sc.stop
+
+scala> Logger.getLogger("org").setLevel(Level.OFF)
+
+scala>     Logger.getLogger("akka").setLevel(Level.OFF)
+
+ 
+
+scala>     val conf = new SparkConf().setMaster("local[4]").setAppName("workdcount")
+conf: org.apache.spark.SparkConf = org.apache.spark.SparkConf@3d5b2c1e
+
+scala>     val ssc = new StreamingContext(conf,Seconds(5))
+ssc: org.apache.spark.streaming.StreamingContext = org.apache.spark.streaming.StreamingContext@6fb3d3bb
+
+scala>     val data = ssc.socketTextStream("localhost",7890)
+data: org.apache.spark.streaming.dstream.ReceiverInputDStream[String] = org.apache.spark.streaming.dstream.SocketInputDStream@3003d288
+
+scala>     val wc = data.flatMap(_.split(" ")).map (x => (x,1)).reduceByKey(_+_)
+wc: org.apache.spark.streaming.dstream.DStream[(String, Int)] = org.apache.spark.streaming.dstream.ShuffledDStream@2a4137a2
+
+scala> wc.print()
+
+
+hadoop@hadoop:~$ nc -lk 7890
+i love you
+you love i
+i love you
+
+
+
+
+scala>     ssc.start()
+
+-------------------------------------------                                     
+Time: 1549420230000 ms
+-------------------------------------------
+
+-------------------------------------------                                     
+Time: 1549420235000 ms
+-------------------------------------------
+(i,3)
+(love,3)
+(you,3)
