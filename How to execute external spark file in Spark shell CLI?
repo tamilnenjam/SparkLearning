@@ -1,0 +1,47 @@
+//Here I am going to run Spark with Scala external file within Spark Command Line Interface.
+//create streamingexa.sc file and store in ~/Desktop/vow folder
+
+streamingexa.sc:
+---------------
+import org.apache.spark.streaming.{Seconds,StreamingContext}
+import org.apache.spark.{SparkConf, SparkContext}
+object Streaming1{
+def main(args:Array[String]):Unit={
+	val conf = new SparkConf()
+		conf.set("spark.master","local[2]")
+		conf.set("spark.app.name","streamingApp1")
+		
+	val sc = new SparkContext(conf)
+	val ssc = new StreamingContext(sc,Seconds(5))
+	val d1 = ssc.socketTextStream("localhost",3456)
+	val d2 = d1.map(x => x).flatMap(x => x.split(" "))
+	d2.print()
+	ssc.start()
+	ssc.awaitTermination()
+	}
+}
+
+// start spark shell CLI 
+$ spark-shell 
+
+//stop existing SparkContext
+scala> sc.stop()
+
+// load external file in CLI
+scala> load streamingexa.sc
+
+// call main method without passing any arguments
+Streaming1.main(null)
+
+
+Open 2nd terminal window
+	nc -lk 3456
+	I love India
+	
+Result in Spark CLI:
+-------------------
+Time: 1549915585000 ms
+-------------------------------------------
+I
+Love
+India
