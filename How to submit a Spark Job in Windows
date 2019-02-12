@@ -16,9 +16,9 @@ object mySparkExa {
       .appName("spark session example")
       .getOrCreate()
 
-      val df = sparkSession.read
+     val df = sparkSession.read
       .option("header", "true")
-      .csv("hdfs://localhost:9000/user/olympic/olympic_data.tsv")
+      .csv("E:\\vow\\emp_data.csv")
 
     df.show()
   }
