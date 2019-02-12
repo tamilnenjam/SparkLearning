@@ -1,0 +1,93 @@
+// Here I developed the program in Windows and created a .jar file in Windows then moved it into Linux via shared folder 
+// Then I executed that jar file via Spark Submit.
+
+E:\POCs\Yahoo\src\main\scala\com\spark\sqlscript\mySparkExa.scala
+------------------------------------------------------------------
+package com.spark.sqlscript
+
+import org.apache.spark.sql.SparkSession
+
+
+object mySparkExa {
+  def main(args:Array[String]):Unit ={
+    val sparkSession = SparkSession.builder
+      .master("local")
+      .appName("spark session example")
+      .getOrCreate()
+
+    val df = sparkSession.read
+      .option("header", "true")
+      .csv("hdfs://localhost:9000/user/country-capitals.csv")
+
+    df.show()
+  }
+}
+
+
+
+
+build.sbt:
+------------
+name := "Yahoo"
+
+version := "0.1"
+
+scalaVersion := "2.11.12"
+
+// https://mvnrepository.com/artifact/org.apache.spark/spark-core
+libraryDependencies += "org.apache.spark" %% "spark-core" % "2.4.0"
+
+// https://mvnrepository.com/artifact/org.apache.spark/spark-sql
+libraryDependencies += "org.apache.spark" %% "spark-sql" % "2.4.0"
+
+
+/// Here I'm making .jar file in Windows.
+E:\POCs\Yahoo>sbt package
+Java HotSpot(TM) 64-Bit Server VM warning: ignoring option MaxPermSize=256m; support was removed in 8.0
+[info] Loading global plugins from C:\Users\tamil\.sbt\1.0\plugins
+[info] Loading project definition from E:\POCs\Yahoo\project
+[info] Loading settings for project yahoo from build.sbt ...
+[info] Set current project to Yahoo (in build file:/E:/POCs/Yahoo/)
+[info] Compiling 1 Scala source to E:\POCs\Yahoo\target\scala-2.11\classes ...
+[info] Done compiling.
+[info] Packaging E:\POCs\Yahoo\target\scala-2.11\yahoo_2.11-0.1.jar ...
+[info] Done packaging.
+[success] Total time: 5 s, completed 12 Feb, 2019 8:15:41 PM
+
+
+// I copied .jar file into Linux via shared folder 
+
+// Now I am in Linux 
+// copy country-capitals.csv into hdfs
+$ hdfs dfs -copyFromLocal country-capitals.csv /user/
+
+
+//To submit spark job :
+$ spark-submit --class com.spark.sqlscript.mySparkExa ~/Desktop/vow/yahoo_2.11-0.1.jar 
+
++--------------------+-----------------+-------------------+----------------+-----------+-------------+
+|         CountryName|      CapitalName|    CapitalLatitude|CapitalLongitude|CountryCode|ContinentName|
++--------------------+-----------------+-------------------+----------------+-----------+-------------+
+|          Somaliland|         Hargeisa|               9.55|       44.050000|       NULL|       Africa|
+|South Georgia and...|King Edward Point|         -54.283333|      -36.500000|         GS|   Antarctica|
+|French Southern a...|Port-aux-Français|             -49.35|       70.216667|         TF|   Antarctica|
+|           Palestine|        Jerusalem| 31.766666666666666|       35.233333|         PS|         Asia|
+|       Aland Islands|        Mariehamn|          60.116667|       19.900000|         AX|       Europe|
+|               Nauru|            Yaren|            -0.5477|      166.920867|         NR|    Australia|
+|        Saint Martin|          Marigot|            18.0731|      -63.082200|         MF|North America|
+|             Tokelau|            Atafu|          -9.166667|     -171.833333|         TK|    Australia|
+|      Western Sahara|         El-Aaiún|          27.153611|      -13.203333|         EH|       Africa|
+|         Afghanistan|            Kabul| 34.516666666666666|       69.183333|         AF|         Asia|
+|             Albania|           Tirana|  41.31666666666667|       19.816667|         AL|       Europe|
+|             Algeria|          Algiers|              36.75|        3.050000|         DZ|       Africa|
+|      American Samoa|        Pago Pago|-14.266666666666667|     -170.700000|         AS|    Australia|
+|             Andorra| Andorra la Vella|               42.5|        1.516667|         AD|       Europe|
+|              Angola|           Luanda| -8.833333333333334|       13.216667|         AO|       Africa|
+|            Anguilla|       The Valley| 18.216666666666665|      -63.050000|         AI|North America|
+| Antigua and Barbuda|     Saint John's| 17.116666666666667|      -61.850000|         AG|North America|
+|           Argentina|     Buenos Aires|-34.583333333333336|      -58.666667|         AR|South America|
+|             Armenia|          Yerevan| 40.166666666666664|       44.500000|         AM|       Europe|
+|               Aruba|       Oranjestad| 12.516666666666667|      -70.033333|         AW|North America|
++--------------------+-----------------+-------------------+----------------+-----------+-------------+
+
+
