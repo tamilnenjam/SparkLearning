@@ -1,0 +1,60 @@
+How to submit a Spark Job in Windows?
+// Here I used a sample Spark program (Scala) created by using IntelliJ IDEA
+My project is stored in : E:\POCs\Yahoo
+
+E:\POCs\Yahoo\src\main\scala\com\spark\sqlscript\mySparkExa.scala
+------------------------------------------------------------------
+package com.spark.sqlscript
+
+import org.apache.spark.sql.SparkSession
+
+
+object mySparkExa {
+  def main(args:Array[String]):Unit ={
+    val sparkSession = SparkSession.builder
+      .master("local")
+      .appName("spark session example")
+      .getOrCreate()
+
+      val df = sparkSession.read
+      .option("header", "true")
+      .csv("hdfs://localhost:9000/user/olympic/olympic_data.tsv")
+
+    df.show()
+  }
+}
+
+// SBT configurations
+--------------------------
+build.sbt:
+------------
+name := "Yahoo"
+
+version := "0.1"
+
+scalaVersion := "2.11.12"
+
+// https://mvnrepository.com/artifact/org.apache.spark/spark-core
+libraryDependencies += "org.apache.spark" %% "spark-core" % "2.4.0"
+
+// https://mvnrepository.com/artifact/org.apache.spark/spark-sql
+libraryDependencies += "org.apache.spark" %% "spark-sql" % "2.4.0"
+
+
+
+
+// Building a JAR file
+E:\POCs\Yahoo>sbt package
+Java HotSpot(TM) 64-Bit Server VM warning: ignoring option MaxPermSize=256m; support was removed in 8.0
+[info] Loading global plugins from C:\Users\tamil\.sbt\1.0\plugins
+[info] Loading project definition from E:\POCs\Yahoo\project
+[info] Loading settings for project yahoo from build.sbt ...
+[info] Set current project to Yahoo (in build file:/E:/POCs/Yahoo/)
+[info] Compiling 1 Scala source to E:\POCs\Yahoo\target\scala-2.11\classes ...
+[info] Done compiling.
+[info] Packaging E:\POCs\Yahoo\target\scala-2.11\yahoo_2.11-0.1.jar ...
+[info] Done packaging.
+[success] Total time: 5 s, completed 12 Feb, 2019 8:15:41 PM
+
+To submit spark job :
+spark-submit --class com.spark.sqlscript.mySparkExa  E:\POCs\Yahoo\target\scala-2.11\yahoo_2.11-0.1.jar
