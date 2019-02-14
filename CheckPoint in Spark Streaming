@@ -30,6 +30,7 @@ object CheckPointExa{
   }
 }
 
+// Input from Netcat
 hadoop@hadoop:~$ nc -lk 34567
 i love you
 madham
@@ -37,7 +38,7 @@ madham
 
 
 
-
+// result displayed on console
 -------------------------------------------
 Time: 1550145480000 ms
 -------------------------------------------
@@ -45,7 +46,7 @@ i love you Stream  Streaming
 madham Stream  Streaming 
 
 
-
+// checkpoint folder created after running the program
 hadoop@hadoop:~$ hdfs dfs -ls /user/myCheckPointFolder
 Found 7 items
 drwxr-xr-x   - hadoop supergroup          0 2019-02-14 17:28 /user/myCheckPointFolder/b75036e7-c6c3-4315-961d-0784509938c2
