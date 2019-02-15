@@ -15,6 +15,10 @@ object IntTwit{
 
     //creation of spark context object
     val sc = new SparkContext(conf)
+    
+    	//AWS Credentials
+	//sc.hadoopConfiguration.set("fs.s3a.access.key","AKIAJ7....")
+	//sc.hadoopConfiguration.set("fs.s3a.secret.key","Btqy7XO...")
 
 	// collect these keys from https://developer.twitter.com
     System.setProperty("twitter4j.oauth.consumerKey","5GtJQ213......")
@@ -30,6 +34,13 @@ object IntTwit{
     val ds2 = ds1.map (x => x.getText).filter(x => x.contains("RIPBraveHearts"))
 
     ds2.print()
+    
+        //Write gathered tweets into Amazon bucket
+	//ds2.saveAsTextFiles("s3a://sparksamplebucket/trumptweets")
+	
+	//Write gathered tweents into hadoop file system
+	ds2.saveAsTextFiles("hdfs://localhost:9000/trumptweets")
+	
     ssc.start()
     ssc.awaitTermination()
   }
