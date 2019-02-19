@@ -1,11 +1,11 @@
 scala> import spark.sqlContext.implicits._
 import spark.sqlContext.implicits._
+ 
 
-scala> val tagsDF = spark.read.option("multiLine", true).option("inferSchema", true).format(
-tagsDF: org.apache.spark.sql.DataFrame = [stackoverflow: array<struct<tag:struct<author:stri
+scala> val tagsDF = spark.read.option("multiLine", true).option("inferSchema", true).format("json").load("E:\\DataSets\\tags_sample.json")
+tagsDF: org.apache.spark.sql.DataFrame = [stackoverflow: array<struct<tag:struct<author:string,frameworks:array<struct<id:bigint,name:string>>,id:bigi
 nt,name:string>>>]
 
-scala>
 
 scala> tagsDF.printSchema
 root
