@@ -1,0 +1,69 @@
+scala> import spark.sqlContext.implicits._
+import spark.sqlContext.implicits._
+
+scala> val tagsDF = spark.read.option("multiLine", true).option("inferSchema", true).format(
+tagsDF: org.apache.spark.sql.DataFrame = [stackoverflow: array<struct<tag:struct<author:stri
+nt,name:string>>>]
+
+scala>
+
+scala> tagsDF.printSchema
+root
+ |-- stackoverflow: array (nullable = true)
+ |    |-- element: struct (containsNull = true)
+ |    |    |-- tag: struct (nullable = true)
+ |    |    |    |-- author: string (nullable = true)
+ |    |    |    |-- frameworks: array (nullable = true)
+ |    |    |    |    |-- element: struct (containsNull = true)
+ |    |    |    |    |    |-- id: long (nullable = true)
+ |    |    |    |    |    |-- name: string (nullable = true)
+ |    |    |    |-- id: long (nullable = true)
+ |    |    |    |-- name: string (nullable = true)
+
+scala> tagsDF.show
++--------------------+
+|       stackoverflow|
++--------------------+
+|[[[Martin Odersky...|
++--------------------+
+ 
+ 
+scala> val df = tagsDF.select(explode($"stackoverflow") as "stags")
+df: org.apache.spark.sql.DataFrame = [stags: struct<tag: struct<author: string, frameworks:
+
+scala> df.printSchema
+root
+ |-- stags: struct (nullable = true)
+ |    |-- tag: struct (nullable = true)
+ |    |    |-- author: string (nullable = true)
+ |    |    |-- frameworks: array (nullable = true)
+ |    |    |    |-- element: struct (containsNull = true)
+ |    |    |    |    |-- id: long (nullable = true)
+ |    |    |    |    |-- name: string (nullable = true)
+ |    |    |-- id: long (nullable = true)
+ |    |    |-- name: string (nullable = true)
+
+
+
+ 
+
+
+scala> val df1 = df.select(
+     |               $"stags.tag.id" as "id",
+     |               $"stags.tag.author" as "author",
+     |               $"stags.tag.name" as "tag_name",
+     |               $"stags.tag.frameworks.id" as "frameworks_id",
+     |               $"stags.tag.frameworks.name" as "frameworks_name"
+     |             )
+df1: org.apache.spark.sql.DataFrame = [id: bigint, author: string ... 3 more fields]
+
+scala> df1.show
++---+--------------+--------+-------------+--------------------+
+| id|        author|tag_name|frameworks_id|     frameworks_name|
++---+--------------+--------+-------------+--------------------+
+|  1|Martin Odersky|   scala|       [1, 2]|[Play Framework, ...|
+|  2| James Gosling|    java|       [1, 2]|[Apache Tomcat, S...|
++---+--------------+--------+-------------+--------------------+
+
+ 
+			
