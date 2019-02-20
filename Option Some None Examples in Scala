@@ -1,0 +1,166 @@
+Examples for Option..Some..None
+-----------------------------------
+
+// Simple Example
+scala> def menu(day:String): Option[String] = {
+     | day match {
+     | case "Sunday" => Some("Fish Curry")
+     | case "Monday" => Some("Veg Curry")
+     | case none => None
+     | }
+     | }
+menu: (day: String)Option[String]
+
+scala> val foodItem = menu("Monday")
+foodItem: Option[String] = Some(Veg Curry)
+
+
+scala> val foodItem = menu("Sunday").getOrElse("General Food")
+foodItem: String = Fish Curry
+
+scala> val foodItem = menu("Monday").getOrElse("General Food")
+foodItem: String = Veg Curry
+
+scala> val foodItem = menu("Tuesday").getOrElse("General Food")
+foodItem: String = General Food
+
+
+
+
+
+// Regex Pattern Matching Example
+scala> import scala.util.matching.Regex
+import scala.util.matching.Regex
+
+scala> val np = new Regex("[0-9]+")
+np: scala.util.matching.Regex = [0-9]+
+
+scala> val address = "1024, Vana IT Services"
+address: String = 1024, Vana IT Services
+
+scala> val match1 = np.findFirstIn(address)
+match1: Option[String] = Some(1024)
+
+scala> val address2 = "Pradham Gardenia"
+address2: String = Pradham Gardenia
+
+scala> val match2 = np.findFirstIn(address2)
+match2: Option[String] = None
+
+scala> val match1 = np.findFirstIn(address).getOrElse("No House Number found")
+match1: String = 1024
+
+scala> val match1 = np.findFirstIn(address2).getOrElse("No House Number found")
+match1: String = No House Number found
+
+
+
+// Extract numbers from a List and calcualte the sum 
+scala> def toInt(s:String):Option[Int] ={
+     | try{
+     | Some(s.toInt)
+     | }
+     | catch {
+     | case e: Exception => None
+     | }
+     | }
+toInt: (s: String)Option[Int]
+
+scala> println(toInt("1").getOrElse(0))
+1
+
+scala> println(toInt("a").getOrElse(0))
+0
+
+scala> val l1 = List("1","2","Lion","4","Tiger")
+l1: List[String] = List(1, 2, Lion, 4, Tiger)
+
+scala> val sum = l1.flatMap(toInt).sum
+sum: Int = 7
+
+// class example #1
+package com.spark.learning
+
+class Person(firstName:String, lastName:String, email:Option[String]){
+  var myemail = email
+  def displayOutput = {
+    println("First Name : " +  firstName)
+    println("Last Name : " + lastName)
+    println("Email : " + myemail.getOrElse("No Email"))
+  }
+}
+
+object OptionSomeNoneExa extends App {
+  val p = new Person("Super","Star",None)
+  p.displayOutput
+
+  p.myemail = Some("test@test.com")
+  p.displayOutput
+}
+
+
+Result:
+-------
+First Name : Super
+Last Name : Star
+Email : No Email
+
+First Name : Super
+Last Name : Star
+Email : test@test.com
+
+ 
+// class example #2 
+package com.spark.learning
+case class Address(city:String, state:String, country:String)
+class UserInfo(emailID:String, phone:String) {
+  var firstName = None: Option[String]
+  var lastName = None: Option[String]
+  var address = None: Option[Address]
+}
+
+object Test extends App {
+  var u = new UserInfo("test@test.com","9886177375")
+  u.firstName = Some("Sankara ")
+  u.lastName = Some("Narayanan")
+  u.address = Some(Address("Pallathur","TamilNadu","India"))
+
+  println(s"First Name is : ${u.firstName.getOrElse("First Name Not found")}")
+  println(s"Last Name is : ${u.lastName.getOrElse("Last Name Not found")}")
+
+  u.address.foreach { x =>
+    println("City is : " +  x.city)
+    println("State is : " + x.state)
+    println("Country is : " + x.country)
+  }
+
+
+    u = new UserInfo("try@test.com","9886177374")
+
+  u.address = Some(Address("Pallathur","","India"))
+
+  println(s" First Name is : ${u.firstName.getOrElse("First Name Not found")}")
+  println(s" Last Name is : ${u.lastName.getOrElse("Last Name Not found")}")
+
+  u.address.foreach { x =>
+    println("City is : " +  x.city)
+    println("State is : " + x.state)
+    println("Country is : " + x.country)
+  }
+}
+
+Result:
+--------
+
+First Name is : Sankara 
+Last Name is : Narayanan
+City is : Pallathur
+State is : TamilNadu
+Country is : India
+
+
+First Name is : First Name Not found
+Last Name is : Last Name Not found
+City is : Pallathur
+State is : 
+Country is : India
