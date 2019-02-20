@@ -1,0 +1,64 @@
+// Try..Success..Failure Examples
+
+scala> import scala.util.{Try,Success,Failure}
+import scala.util.{Try, Success, Failure}
+
+scala> import scala.io.Source
+import scala.io.Source
+
+scala>  def readFile(path:String) : Try[List[String]] = {
+     |  Try(Source.fromFile(path).getLines.toList)
+     |  }
+readFile: (path: String)scala.util.Try[List[String]]
+
+scala> val  validFilePath = "E:\\DataSets\\guns.csv"
+invalidFilePath: String = E:\DataSets\gunsnotfound.csv
+
+scala> readFile(validFilePath)
+res0: scala.util.Try[List[String]] = Success(List("","year","month","intent","police","sex","age","race","hispanic","place","education", "1",2012,"01"
+,"Suicide",0,"M",34,"Asian/Pacific Islander",100,"Home",4, "2",2012,"01","Suicide",0,"F",21,"White",100,"Street",3, "3",2012,"01","Suicide",0,"M",60,"
+White",100,"Other specified",4, "4",2012,"02","Suicide",0,"M",64,"White",100,"Home",4, "5",2012,"02","Suicide",0,"M",31,"White",100,"Other specified",
+2, "6",2012,"02","Suicide",0,"M",17,"Native American/Native Alaskan",100,"Home",1, "7",2012,"02","Undetermined",0,"M",48,"White",100,"Home",2, "8",201
+2,"03","Suicide",0,"M",41,"Native American/Native Alaskan",100,"Home",2, "9",2012,"02","Accidental",0,"M",50,"White",100,"Other specified",3, "10",201
+2,"02","Suicide",0,"M",NA,"Black",998,"Home",5,...
+scala>
+
+scala> val invalidFilePath = "E:\\DataSets\\gunsnotfound.csv"
+invalidFilePath: String = E:\DataSets\gunsnotfound.csv
+
+scala> readFile(invalidFilePath)
+res1: scala.util.Try[List[String]] = Failure(java.io.FileNotFoundException: E:\DataSets\gunsnotfound.csv (The system cannot find the file specified))
+
+
+scala>  readFile(filePath) match {
+     | case Success(a) => a.foreach(println)
+     | case Failure(b) => println(b.getMessage)
+     | }
+{"athelete":"Michael Phelps","age":19,"country":"United States","year":"2004","closing":"08-29-04","sport":"Swimming","gold":6,"silver":0,"bronze":2,"
+total":8}
+{"athelete":"Michael Phelps","age":23,"country":"United States","year":"2008","closing":"08-24-08","sport":"Swimming","gold":8,"silver":0,"bronze":0,"
+total":8}
+
+ 
+ 
+ scala> def parseInt(a:String) : Try[Int] = Try(a.toInt)
+parseInt: (a: String)scala.util.Try[Int]
+
+scala> parseInt("2")
+res5: scala.util.Try[Int] = Success(2)
+
+scala> parseInt("I Love India")
+res6: scala.util.Try[Int] = Failure(java.lang.NumberFormatException: For input string: "I Love India")
+
+
+scala>  parseInt("2") match {
+     |  case Success(a) => println(a)
+     |  case Failure(b) => println(b.getMessage)
+     |  }
+2
+
+scala> parseInt("333").toOption
+res10: Option[Int] = Some(333)
+
+scala> parseInt("IloveIndia").toOption
+res11: Option[Int] = None
