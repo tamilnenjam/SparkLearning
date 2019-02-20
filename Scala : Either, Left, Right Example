@@ -1,0 +1,85 @@
+// Either... Left.. Right
+scala>  def menu(day:String): Either[Int,String] = {
+     |  if (day == "Sunday") Right("Fish Curry")
+     |  else if (day == "Monday") Right("Veg Fry")
+     |  else Left(0)
+     |  }
+menu: (day: String)Either[Int,String]
+
+scala> println(menu("Sunday"))
+Right(Fish Curry)
+
+scala> println(menu("Monday"))
+Right(Veg Fry)
+
+scala> println(menu("Tuesday"))
+Left(0)
+
+
+  menu(input) match {
+ case Left(a) => println("Left Answer is : " + a)
+ case Right(b) => println("Right Answer is : " + b)
+ }
+ Right Answer is : Fish Curry
+ 
+ scala> val c = menu("Monday")
+c: Either[Int,String] = Right(Veg Fry)
+
+scala> c.isRight
+res3: Boolean = true
+
+scala> c.isLeft
+res4: Boolean = false
+
+ 
+scala> val c = menu("Monday")
+c: Either[Int,String] = Right(Veg Fry)
+
+scala> c.isLeft
+res5: Boolean = false
+scala>
+scala> c.isRight
+res6: Boolean = true
+
+scala> val input = "Sunday"
+input: String = Sunday
+
+scala> if (menu(input).isLeft) menu(input).left.map( a => println("Answer is : " + a))
+res7: Any = ()
+
+
+scala>  if (menu(input).isRight) menu(input).right.map( b => println("Answer is : " + b))
+Answer is : Fish Curry
+res1: Any = Right(())
+
+
+
+scala> val c = menu("Monday")
+c: Either[Int,String] = Right(Veg Fry)
+
+scala> c
+res3: Either[Int,String] = Right(Veg Fry)
+
+
+scala> c.left.toOption
+res8: Option[Int] = None
+
+scala> c.right.toOption
+res9: Option[String] = Some(Veg Fry)
+
+
+
+def divideXByY(x: Int, y: Int): Either[String, Int] = {
+      if (y == 0) Left("Dude, can't divide by 0")
+      else Right(x / y)
+  }
+  
+  // a few different ways to use Either, Left, and Right
+  println(divideXByY(1, 0))
+  println(divideXByY(1, 1))
+  divideXByY(1, 0) match {
+      case Left(s) => println("Answer: " + s)
+      case Right(i) => println("Answer: " + i)
+  }
+
+}
