@@ -1,0 +1,74 @@
+// create a folder in hdfs :
+
+$ hdfs dfs -mkdir /user/flumeExa
+
+// Create a shell script which generates : Hadoop in real world <n>
+
+hadoop@hadoop:~/Desktop/vow$ cat > loopThrough.sh
+rm logfile.log
+i=0
+while :
+do
+  echo Hadoop in real world $i >> logfile.log
+  i=`expr $i + 1`
+  sleep 5
+done
+^C
+
+// Run the shell script to keep on appending into logfile.log: 
+
+hadoop@hadoop:~/Desktop/vow$ sh loopThrough.sh 
+
+// create a flume configuration file named : simple-flume.conf
+-----------------------------------------------------------------
+
+# Flume Components
+agent.sources = tail-source
+agent.sinks = hdfs-sink
+agent.channels = memory-channel
+
+# Source
+agent.sources.tail-source.type = exec
+agent.sources.tail-source.command = tail -f logfile.log #where is the source
+agent.sources.tail-source.channels = memory-channel
+
+# Sink
+agent.sinks.hdfs-sink.type = hdfs
+agent.sinks.hdfs-sink.hdfs.path = user/flumeExa  #where is the destination
+agent.sinks.hdfs-sink.hdfs.fileType = DataStream
+agent.sinks.hdfs-sink.channel = memory-channel
+
+# Channel
+agent.channels.memory-channel.type = memory
+
+
+
+// Run the flume 
+//Here flume reads the logfile.log content and write it into hdfs location : user/flumeExa
+
+flume-ng agent --conf /home/hadoop/Desktop/vow/ -f /home/hadoop/Desktop/vow/simple-flume.conf -Dflume.root.logger=DEBUG,console -n agent
+
+// Check the hdfs folder
+
+hdfs dfs -ls user/flumeExa/
+Found 9 items
+-rw-r--r--   1 hadoop supergroup        240 2019-02-22 12:26 user/flumeExa/FlumeData.1550818590651
+-rw-r--r--   1 hadoop supergroup        168 2019-02-22 12:27 user/flumeExa/FlumeData.1550818590652
+-rw-r--r--   1 hadoop supergroup        168 2019-02-22 12:27 user/flumeExa/FlumeData.1550818623842
+-rw-r--r--   1 hadoop supergroup        168 2019-02-22 12:28 user/flumeExa/FlumeData.1550818658881
+-rw-r--r--   1 hadoop supergroup        168 2019-02-22 12:28 user/flumeExa/FlumeData.1550818693932
+-rw-r--r--   1 hadoop supergroup        168 2019-02-22 12:29 user/flumeExa/FlumeData.1550818728976
+-rw-r--r--   1 hadoop supergroup        168 2019-02-22 12:29 user/flumeExa/FlumeData.1550818764024
+-rw-r--r--   1 hadoop supergroup        168 2019-02-22 12:30 user/flumeExa/FlumeData.1550818799065
+-rw-r--r--   1 hadoop supergroup        168 2019-02-22 12:31 user/flumeExa/FlumeData.1550818834114
+
+// see the content of a file which is created with the help of flume
+
+hdfs dfs -cat user/flumeExa/FlumeData.1550818834114
+Hadoop in real world 72
+Hadoop in real world 73
+Hadoop in real world 74
+Hadoop in real world 75
+Hadoop in real world 76
+Hadoop in real world 77
+Hadoop in real world 78
