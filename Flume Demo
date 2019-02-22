@@ -29,12 +29,12 @@ agent.channels = memory-channel
 
 # Source
 agent.sources.tail-source.type = exec
-agent.sources.tail-source.command = tail -f logfile.log #where is the source
+agent.sources.tail-source.command = tail -f logfile.log  
 agent.sources.tail-source.channels = memory-channel
 
 # Sink
 agent.sinks.hdfs-sink.type = hdfs
-agent.sinks.hdfs-sink.hdfs.path = user/flumeExa  #where is the destination
+agent.sinks.hdfs-sink.hdfs.path = user/flumeExa  
 agent.sinks.hdfs-sink.hdfs.fileType = DataStream
 agent.sinks.hdfs-sink.channel = memory-channel
 
