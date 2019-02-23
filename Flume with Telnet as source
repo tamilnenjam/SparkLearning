@@ -1,0 +1,53 @@
+Before starting Flume with Telnet, make sure you installed telnet. 
+Or do follow the steps below to install Telnet in Ubuntu.
+
+sudo apt-get -y install telnet
+sudo apt-get install xinetd telnetd 
+sudo /etc/init.d/xinetd restart 
+
+sudo apt install net-tools
+sudo apt install curl
+
+
+flume.conf 
+----------------
+# example.conf: A single-node Flume configuration
+
+# Name the components on this agent
+a1.sources = r1
+a1.sinks = k1
+a1.channels = c1
+
+# Describe/configure the source
+a1.sources.r1.type = netcat
+a1.sources.r1.bind = localhost
+a1.sources.r1.port = 44444
+
+# Describe the sink
+a1.sinks.k1.type = logger
+
+# Use a channel which buffers events in memory
+a1.channels.c1.type = memory
+a1.channels.c1.capacity = 1000
+a1.channels.c1.transactionCapacity = 100
+
+# Bind the source and sink to the channel
+a1.sources.r1.channels = c1
+a1.sinks.k1.channel = c1
+                              
+// Make sure Hadoop daemons are running currently. Else do start-all.sh 
+//Start flume
+flume-ng agent -n a1 -c /home/hadoop/Desktop/vow -f /home/hadoop/Desktop/vow/flume.conf
+2019-02-23 07:21:12,088 INFO source.NetcatSource: Created serverSocket:sun.nio.ch.ServerSocketChannelImpl[/127.0.0.1:44444]
+
+//text entered in telnet (source) are displayed in console of flume agent
+2019-02-23 07:22:54,114 INFO sink.LoggerSink: Event: { headers:{} body: 69 20 6C 6F 76 65 20 69 6E 64 69 61             i love india }
+2019-02-23 07:22:56,003 INFO sink.LoggerSink: Event: { headers:{} body: 77 68 6F 20 69 73 20 62 65 61 75 74 79 3F       who is beauty? }
+
+//run telnet
+curl telnet://localhost:44444
+hadoop@hadoop:~/Desktop/vow$ curl telnet://localhost:44444
+i love india
+OK
+who is beauty?
+OK
