@@ -1,0 +1,43 @@
+$ sudo apt-get upgrade
+
+$ sudo apt autoremove
+
+$ sudo apt-key adv --keyserver pool.sks-keyservers.net --recv-key A278B781FE4B2BDA
+
+$ sudo apt-get update
+
+// verify Python version
+$ python -V
+Python 2.7.15+
+
+
+
+Installing Casandra:
+-----------------------
+$ echo "deb http://www.apache.org/dist/cassandra/debian 311x main" | sudo tee -a /etc/apt/sources.list.d/cassandra.sources.list
+deb http://www.apache.org/dist/cassandra/debian 311x main
+
+$ curl https://www.apache.org/dist/cassandra/KEYS | sudo apt-key add -
+
+$ sudo apt-get update
+
+$ sudo apt-get install cassandra
+
+//start cassandra server
+$ sudo service cassandra start
+
+$ sudo update-rc.d cassandra defaults
+
+hadoop@hadoop:/usr/local$ nodetool status
+Datacenter: datacenter1
+=======================
+Status=Up/Down
+|/ State=Normal/Leaving/Joining/Moving
+--  Address    Load       Tokens       Owns (effective)  Host ID                               Rack
+UN  127.0.0.1  103.67 KiB  256          100.0%            a8c39288-3d56-4768-ba56-9910e9ce02e2  rack1
+
+//start CLI for Cassandra
+$ cqlsh localhost
+Connected to Test Cluster at localhost:9042.
+[cqlsh 5.0.1 | Cassandra 3.11.4 | CQL spec 3.4.4 | Native protocol v4]
+Use HELP for help.
