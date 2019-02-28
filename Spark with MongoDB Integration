@@ -1,0 +1,58 @@
+
+<!-- https://mvnrepository.com/artifact/org.mongodb.spark/mongo-spark-connector -->
+<dependency>
+    <groupId>org.mongodb.spark</groupId>
+    <artifactId>mongo-spark-connector_2.11</artifactId>
+    <version>2.4.0</version>
+</dependency>
+
+
+
+spark-shell --packages org.mongodb.spark:mongo-spark-connector_2.11:2.4.0
+
+
+scala> import com.mongodb.spark._
+import com.mongodb.spark._
+
+scala> import com.mongodb.spark.config.ReadConfig
+import com.mongodb.spark.config.ReadConfig
+
+scala> import com.mongodb.spark.sql._
+import com.mongodb.spark.sql._
+
+ 
+
+scala> import org.bson.Document
+import org.bson.Document
+
+scala> import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.SparkSession
+
+scala> import org.apache.spark.sql.functions.{max, min}
+import org.apache.spark.sql.functions.{max, min}
+
+scala> val spark = SparkSession.builder().appName("MongoPlayers").master("local[*]").getOrCreate()
+
+scala> val readConfig = ReadConfig(Map("uri" -> "mongodb://127.0.0.1/", "database" -> "test", "collection" -> "players")) 
+
+scala>  val df = spark.read.mongo(readConfig) )
+
+scala>  df.printSchema()
+root
+ |-- _id: struct (nullable = true)
+ |    |-- oid: string (nullable = true)
+ |-- age: double (nullable = true)
+ |-- birthdate: string (nullable = true)
+ |-- birthplace: string (nullable = true)
+ |-- height: string (nullable = true)
+ |-- id: double (nullable = true)
+ |-- imageUrl: string (nullable = true)
+ |-- name: string (nullable = true)
+ |-- number: double (nullable = true)
+ |-- position: string (nullable = true)
+ |-- twitterHandle: string (nullable = true)
+ |-- twitterURL: string (nullable = true)
+ |-- weight: double (nullable = true)
+
+
+scala> df.show()
