@@ -35,7 +35,7 @@ scala> val spark = SparkSession.builder().appName("MongoPlayers").master("local[
 
 scala> val readConfig = ReadConfig(Map("uri" -> "mongodb://127.0.0.1/", "database" -> "test", "collection" -> "players")) 
 
-scala>  val df = spark.read.mongo(readConfig) )
+scala>  val df = spark.read.mongo(readConfig) 
 
 scala>  df.printSchema()
 root
