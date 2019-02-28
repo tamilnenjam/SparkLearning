@@ -1,0 +1,15 @@
+MongoDB Installation:
+-----------------------
+$ sudo apt update
+$ sudo apt install mongodb
+$ sudo systemctl status mongodb
+$ sudo systemctl start / stop / restart / disable / enable mongodb
+
+$ sudo systemctl start mongodb // start it
+
+$ mongo // to start with CLI
+MongoDB shell version v3.6.3
+connecting to: mongodb://127.0.0.1:27017
+MongoDB server version: 3.6.3
+
+ post = { "position":"Right Wing", "id": 84, "weight":200, "height":"6' 0\"", "imageurl" : "url", "birthplace" : "Seria,BRN", "age":37, "name":"Craig Adams", "birthdate":"April 26,1977", "number":27 }
