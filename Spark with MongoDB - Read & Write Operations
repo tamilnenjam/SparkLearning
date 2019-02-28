@@ -55,12 +55,14 @@ BulkWriteResult({
 > db.person.find({"name":"Sankara"})
 { "_id" : ObjectId("5c780db0d44e3fc2ebd26d43"), "id" : 100, "name" : "Sankara", "salary" : 3000, "city" : "Pallathur" }
 
+
+// Spark starts here
 	spark-shell --packages org.mongodb.spark:mongo-spark-connector_2.11:2.4.0
    
 	import com.mongodb.spark._
 	import com.mongodb.spark.config.ReadConfig
 	import com.mongodb.spark.sql._
-    import org.bson.Document
+        import org.bson.Document
 	import org.apache.spark.sql.SparkSession
 	 
 	val spark = SparkSession.builder().appName("MongoPerson").master("local[*]").getOrCreate()
