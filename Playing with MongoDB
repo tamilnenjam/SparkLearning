@@ -1,0 +1,106 @@
+$ mongo // start CLI
+MongoDB shell version v3.6.3
+connecting to: mongodb://127.0.0.1:27017
+MongoDB server version: 3.6.3
+
+// create a json object
+ post = { "position":"Right Wing", "id": 84, "weight":200, "height":"6' 0\"", "imageurl" : "url", "birthplace" : "Seria,BRN", "age":37, "name":"Craig Adams", "birthdate":"April 26,1977", "number":27 }
+
+// insert single
+db.players.insert(post);
+
+//insert multiple
+db.players.insert([{  
+         "position":"Right Wing",
+         "id":8465166,
+         "weight":200,
+         "height":"6' 0\"",
+         "imageUrl":"http://1.cdn.nhle.com/photos/mugs/8465166.jpg",
+         "birthplace":"Seria, BRN",
+         "age":37,
+         "name":"Craig Adams",
+         "birthdate":"April 26, 1977",
+         "number":27
+      },
+      {  
+         "position":"Right Wing",
+         "id":8475761,
+         "weight":195,
+         "height":"6' 2\"",
+         "imageUrl":"http://1.cdn.nhle.com/photos/mugs/8475761.jpg",
+         "birthplace":"Gardena, CA, USA",
+         "age":23,
+         "name":"Beau Bennett",
+         "birthdate":"November 27, 1991",
+         "number":19
+      }])
+
+BulkWriteResult({
+	"writeErrors" : [ ],
+	"writeConcernErrors" : [ ],
+	"nInserted" : 2,
+	"nUpserted" : 0,
+	"nMatched" : 0,
+	"nModified" : 0,
+	"nRemoved" : 0,
+	"upserted" : [ ]
+})
+
+// select all
+db.players.find() 
+{ "_id" : ObjectId("5c77b1dbd44e3fc2ebd26d2a"), "position" : "Right Wing", "id" : 8465166, "weight" : 200, "height" : "6' 0\"", "imageUrl" : "http://1.cdn.nhle.com/photos/mugs/8465166.jpg", "birthplace" : "Seria, BRN", "age" : 37, "name" : "Craig Adams", "birthdate" : "April 26, 1977", "number" : 27 }
+{ "_id" : ObjectId("5c77b1dbd44e3fc2ebd26d2b"), "position" : "Right Wing", "id" : 8475761, "weight" : 195, "height" : "6' 2\"", "imageUrl" : "http://1.cdn.nhle.com/photos/mugs/8475761.jpg", "birthplace" : "Gardena, CA, USA", "age" : 23, "name" : "Beau Bennett", "birthdate" : "November 27, 1991", "number" : 19 }
+{ "_id" : ObjectId("5c77b1dbd44e3fc2ebd26d2c"), "position" : "Left Wing", "id" : 8471260, "weight" : 202, "height" : "6' 1\"", "imageUrl" : "http://3.cdn.nhle.com/photos/mugs/8471260.jpg", "birthplace" : "Meadow Lake, SK, CAN", "age" : 29, "name" : "Blake Comeau", "birthdate" : "February 18, 1986", "number" : 17 }
+
+// select with condition
+>  db.players.find(
+... {"position":"Goalie"}
+... )
+{ "_id" : ObjectId("5c77b1dbd44e3fc2ebd26d41"), "position" : "Goalie", "id" : 8470594, "weight" : 180, "height" : "6' 2\"", "imageUrl" : "http://3.cdn.nhle.com/photos/mugs/8470594.jpg", "birthplace" : "Sorel, QC, CAN", "age" : 30, "name" : "Marc-Andre Fleury", "birthdate" : "November 28, 1984", "number" : 29 }
+{ "_id" : ObjectId("5c77b1dbd44e3fc2ebd26d42"), "position" : "Goalie", "id" : 8471306, "weight" : 220, "height" : "6' 1\"", "imageUrl" : "http://1.cdn.nhle.com/photos/mugs/8471306.jpg", "birthplace" : "Fussen, DEU", "age" : 29, "name" : "Thomas Greiss", "birthdate" : "January 29, 1986", "number" : 1 }
+
+// display the db
+> db
+test
+
+// display it in pretty way
+>  db.players.find().pretty()
+{
+	"_id" : ObjectId("5c77b1dbd44e3fc2ebd26d2a"),
+	"position" : "Right Wing",
+	"id" : 8465166,
+	"weight" : 200,
+	"height" : "6' 0\"",
+	"imageUrl" : "http://1.cdn.nhle.com/photos/mugs/8465166.jpg",
+	"birthplace" : "Seria, BRN",
+	"age" : 37,
+	"name" : "Craig Adams",
+	"birthdate" : "April 26, 1977",
+	"number" : 27
+}
+{
+	"_id" : ObjectId("5c77b1dbd44e3fc2ebd26d2b"),
+	"position" : "Right Wing",
+	"id" : 8475761,
+	"weight" : 195,
+	"height" : "6' 2\"",
+	"imageUrl" : "http://1.cdn.nhle.com/photos/mugs/8475761.jpg",
+	"birthplace" : "Gardena, CA, USA",
+	"age" : 23,
+	"name" : "Beau Bennett",
+	"birthdate" : "November 27, 1991",
+	"number" : 19
+}
+
+// show all tables
+>  show collections
+players
+
+ 
+// remove a record
+> db.players.remove({"id":8465166 })
+WriteResult({ "nRemoved" : 1 })
+
+// drop a document
+> db.players.drop()
+true
