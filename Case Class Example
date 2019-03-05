@@ -1,57 +1,84 @@
-hdfs dfs -cat /user/cloudera/person/person.txt
+//create a text file with sample data
+hadoop@hadoop:~/Desktop/vow$ cat > person.txt
 Barack,Obama,53
 George,Bush,68
 Bill,Clinton,68
 
+//copy the file into hdfs
+hadoop@hadoop:~/Desktop/vow$ hdfs dfs -copyFromLocal person.txt /user/person.txt
 
-scala> import sqlContext.implicits._
-import sqlContext.implicits._
+//view the content
+hadoop@hadoop:~/Desktop/vow$ hdfs dfs -cat /user/person.txt
+Barack,Obama,53
+George,Bush,68
+Bill,Clinton,68
 
-scala> case class Person(first_name:String,last_name:String,age:Int)
+$ spark-shell
+
+// case class definition 
+scala> case class Person(firstName:String, lastName:String, age:Int)
 defined class Person
 
-scala> val p = sc.textFile("/user/cloudera/person/person.txt")
-p: org.apache.spark.rdd.RDD[String] = /user/cloudera/person/person.txt MapPartitionsRDD[1] at textFile at <console>:30
+// make RDD from file
+scala> val personFile = sc.textFile("hdfs://localhost:9000/user/person.txt")
+personFile: org.apache.spark.rdd.RDD[String] = hdfs://localhost:9000/user/person.txt MapPartitionsRDD[1] at textFile at <console>:24
 
+// view the line count
+scala> personFile.count
+res0: Long = 3   
 
-scala> val pmap = p.map( line => line.split(","))
-pmap: org.apache.spark.rdd.RDD[Array[String]] = MapPartitionsRDD[2] at map at <console>:32
+// Mapping each row of an RDD 
+scala> val p = personFile.map(p => {
+     | val fields = p.split(",")
+     | val FirstName = fields(0)
+     | val LastName = fields(1)
+     | val Age = fields(2).toInt
+     | Person(FirstName,LastName,Age)
+     | })
+p: org.apache.spark.rdd.RDD[Person] = MapPartitionsRDD[2] at map at <console>:27
 
+// display all elements
+scala> p.collect.foreach(println)
+Person(Barack,Obama,53)
+Person(George,Bush,68)
+Person(Bill,Clinton,68)
 
+//Making Dataframe
+scala> val df = p.toDF()
+df: org.apache.spark.sql.DataFrame = [firstName: string, lastName: string ... 1 more field]
 
-scala> val personRDD = pmap.map( p => Person(p(0),p(1),p(2).toInt))
-personRDD: org.apache.spark.rdd.RDD[Person] = MapPartitionsRDD[3] at map at <console>:36
-
-
-
-
-scala> val sqlcontext = new org.apache.spark.sql.SQLContext(sc)
-sqlcontext: org.apache.spark.sql.SQLContext = org.apache.spark.sql.SQLContext@6900dc43
-
-cala> personDF.printSchema
+//Display the schema
+scala> df.printSchema
 root
- |-- first_name: string (nullable = true)
- |-- last_name: string (nullable = true)
+ |-- firstName: string (nullable = true)
+ |-- lastName: string (nullable = true)
  |-- age: integer (nullable = false)
 
 
-scala> personDF.registerTempTable("Employee")
+scala> df.show
++---------+--------+---+
+|firstName|lastName|age|
++---------+--------+---+
+|   Barack|   Obama| 53|
+|   George|    Bush| 68|
+|     Bill| Clinton| 68|
++---------+--------+---+
 
-cala> personDF.printSchema
-root
- |-- first_name: string (nullable = true)
- |-- last_name: string (nullable = true)
- |-- age: integer (nullable = false)
+scala> df.createOrReplaceTempView("tblPerson")
 
++---------+--------+---+
+|firstName|lastName|age|
++---------+--------+---+
+|   Barack|   Obama| 53|
+|   George|    Bush| 68|
+|     Bill| Clinton| 68|
++---------+--------+---+
 
-
-
-scala> personDF.registerTempTable("Employee")
-
-+----------+---------+---+
-|first_name|last_name|age|
-+----------+---------+---+
-|    Barack|    Obama| 53|
-|    George|     Bush| 68|
-|      Bill|  Clinton| 68|
-+----------+---------+---+
+scala> df.select("firstName","age").show
++---------+---+
+|firstName|age|
++---------+---+
+|   Barack| 53|
+|   George| 68|
+|     Bill| 68|
++---------+---+
