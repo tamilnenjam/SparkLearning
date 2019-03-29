@@ -1,0 +1,33 @@
+// Here we are going to compare 2 different strings and finding matching letters and count of matched
+
+ val firstString = "uuai aao ioaau eieoiou"
+ val secondString = "i love india and singapore"
+ val m = new Array[Char](50)
+ var i = 0
+ var leftString  = ""
+
+
+ for (c <- firstString) {
+     m(i) = c
+     i = i  + 1
+     }
+ 
+  for (c <- m.distinct.sorted(Ordering.Char)){
+                if (c != null) {
+      leftString = leftString + c.toString
+      }
+      }
+
+  m.distinct.sorted(Ordering.Char)
+
+  var output = Map[String,String]()
+  var count = 0
+  for (lc <- leftString) {
+     count =   secondString.count(_ == lc)
+     output = output + (lc.toString ->count.toString)
+     }
+
+ println(output)
+
+ scala>  println(output)
+Map(e -> 2,  -> 0, u -> 0, a -> 3, i -> 4,   -> 4, o -> 2)
