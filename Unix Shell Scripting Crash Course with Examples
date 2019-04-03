@@ -1,0 +1,843 @@
+$ touch hello.sh // create an empty file
+$ atom hello.sh  // open atom editor
+	hello.sh:
+	--------
+	#!/usr/bin/env bash
+	#hello world sample script
+	echo Hello world!
+	echo Mars is red!
+
+hadoop@hadoop:~/Desktop/vow/shellscript$ chmod 755 hello.sh
+
+$ ./hello.sh
+
+$ sh hello.sh
+	Hello world!
+	Mars is red!
+
+
+
+$ touch greeting.sh
+
+$ atom greeting.sh
+	#!/usr/bin/env bash
+	FIRST_NAME=Bob
+	FAVORITE_COLOR=blue
+	echo Hi $FIRST_NAME, your favorite color is $FAVORITE_COLOR
+
+$ ./greeting.sh
+	Hi Bob, your favorite color is blue
+
+
+greeting.sh:
+-------------
+	#!/usr/bin/env bash
+	FIRST_NAME="Bob Roberts"
+	FAVORITE_COLOR=blue
+	echo Hi $FIRST_NAME, your favorite color is $FAVORITE_COLOR
+
+
+$ ./greeting.sh
+	Hi Bob Roberts, your favorite color is blue
+
+//Parameters
+$0 - name of the script, the path is included
+
+$1, $2, $3, ${10}, 
+	${255} - the last parameter
+	
+
+$ touch params.sh
+$ atom params.sh
+
+params.sh
+------------
+	#!/usr/bin/env bash
+	echo File name is, $0
+	echo First Name : $1
+	echo Last Name : $2
+	
+	
+	$ ./params.sh Kapil Dev
+		File name is, ./params.sh
+		First Name : Kapil
+		Last Name : Dev
+
+
+
+#!/usr/bin/env bash
+FIRST_NAME=$1
+LAST_NAME=$2
+echo Hello, $FIRST_NAME, $LAST_NAME
+echo $`date`
+echo $`pwd`
+
+
+$ bash params.sh sare ga
+	Hello, sare, ga
+	$Wed Apr 3 10:15:42 IST 2019
+	$/home/hadoop/Desktop/vow/shellscript
+
+
+
+Challenge:
+----------
+	Create a script named sport.sh
+	Make it executable
+	Accept 2 parameters : name and a favorite sport
+	Display any sentence to the console using those inputs
+	
+	
+sport.sh:
+----------	
+#!/usr/bin/env bash
+NAME=$1
+SPORT=$2
+echo $NAME likes to watch $SPORT.
+
+Execute the script:
+-------------------
+$ sh sport.sh Vijay Soccer
+Vijay likes to watch Soccer.
+
+
+If example:
+-----------
+#!/usr/bin/env bash
+COLOR=$1
+if [ $COLOR = "blue" ]
+then
+  echo "The color is blue"
+fi
+
+USER_GUESS=$2
+COMPUTER=50
+
+if [ $USER_GUESS -lt $COMPUTER ]
+then
+    echo "You are too Low"
+fi
+
+
+$ ./if.sh blue 40
+The color is blue
+You are too Low
+
+
+
+#!/usr/bin/env bash
+COLOR=$1
+if [ $COLOR = "blue" ]
+then
+  echo "The color is blue"
+else
+  echo "The color is NOT blue"
+fi
+
+USER_GUESS=$2
+COMPUTER=50
+
+if [ $USER_GUESS -lt $COMPUTER ]
+then
+    echo "You are too Low"
+else
+    echo "You are equal or too high"
+fi
+
+
+$ ./if.sh Orange 55
+The color is NOT blue
+You are equal or too high
+
+
+
+#!/usr/bin/env bash
+USER_GUESS=$1
+COMPUTER=50
+if [ $USER_GUESS -lt $COMPUTER ]
+then
+  echo "You are too low"
+elif [ $USER_GUESS -gt $COMPUTER ]
+then
+  echo "You are too High"
+else
+  echo "You have guessed it"
+fi
+
+
+$ ./if.sh 50
+	You have guessed it
+
+$ ./if.sh 44
+	You are too low
+
+$ ./if.sh 66
+	You are too High
+
+
+
+
+whileexa.sh:
+------------
+	#!/usr/bin/env bash
+	COUNT=0
+	while [ $COUNT -lt 10 ]
+	do
+	  echo "COUNT = $COUNT"
+	  ((COUNT++))
+	done
+
+	echo "While Loop Finished!".
+	exit 0
+
+
+$ ./whileexa.sh
+	COUNT = 0
+	COUNT = 1
+	COUNT = 2
+	COUNT = 3
+	COUNT = 4
+	COUNT = 5
+	COUNT = 6
+	COUNT = 7
+	COUNT = 8
+	COUNT = 9
+	While Loop Finished!.
+	
+	
+for.sh: (for each - multiple arguments)
+-------
+#!/usr/bin/env bash
+NAMES=$@
+
+for NAME in $NAMES
+do
+  echo "Hello $NAME"
+done
+
+echo "for loop terminated"
+
+
+
+$ ./for.sh a b c d e f g h (n number of variable number of arguments)
+Hello a
+Hello b
+Hello c
+Hello d
+Hello e
+Hello f
+Hello g
+Hello h
+for loop terminated
+
+
+$ ./for.sh Awesome Outstanding Tremendous
+Hello Awesome
+Hello Outstanding
+Hello Tremendous
+for loop terminated
+
+
+
+// break example
+for.sh:
+-------
+#!/usr/bin/env bash
+NAMES=$@
+
+for NAME in $NAMES
+do
+  if [ $NAME = "Tracy" ]
+  then
+    break
+  fi
+  echo "Hello $NAME"
+done
+
+echo "for loop terminated"
+
+
+
+$ ./for.sh Stacy Tracy Lacy
+Hello Stacy
+for loop terminated
+
+
+
+Challenge:
+-----------
+Write a script named counter.sh
+It should count from 1 to the number entered by the user
+Through the loop, display the current count value
+Once the loop terminates, display "Loop finished"
+
+#!/usr/bin/env bash
+COUNT=1
+END=$1
+
+while [ $COUNT -le $END ]
+do
+  echo "COUNT = $COUNT"
+  ((COUNT++))
+done
+
+echo "Loop Finished."
+
+
+$ ./counter.sh 5
+COUNT = 1
+COUNT = 2
+COUNT = 3
+COUNT = 4
+COUNT = 5
+Loop Finished.
+
+
+$ ./counter.sh 7
+COUNT = 1
+COUNT = 2
+COUNT = 3
+COUNT = 4
+COUNT = 5
+COUNT = 6
+COUNT = 7
+Loop Finished.
+
+
+//Environment variable example
+vars.sh:
+--------
+#!/usr/bin/env bash
+echo "The PATH is : $PATH"
+echo "The terminal is : $TERM"
+echo "The editor is : $EDITOR"
+
+if [ -z $EDITOR ]
+then
+  echo "The EDITOR variable is not set"
+fi
+
+PATH="/bob"
+echo "The PATH IS : $PATH"
+
+
+output:
+---------
+$ ./vars.sh
+The PATH is : /usr/local/hive/bin:/usr/local/hive/lib:/usr/local/spark/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/usr/local/java/bin:/usr/local/hadoop/bin:/usr/local/hadoop/sbin:/usr/local/kafka/bin
+The terminal is : xterm-256color
+The editor is : 
+The EDITOR variable is not set
+The PATH IS : /bob
+
+HOME - user's home directory
+PATH - directories which are searched for commands
+HOSTNAME - hostname of the machine
+SHELL - shell thats being used
+USER - user of this session
+TERM - type of command-line terminal that is being used
+
+
+// display environmental variables
+$ echo $HOME
+/home/hadoop
+
+$ echo $PATH
+/usr/local/hive/bin:/usr/local/hive/lib:/usr/local/spark/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/usr/local/java/bin:/usr/local/hadoop/bin:/usr/local/hadoop/sbin:/usr/local/kafka/bin
+
+$ echo $HOSTNAME
+hadoop
+
+$ echo $SHELL
+/bin/bash
+
+$ echo $TERM
+xterm-256color
+
+$ echo $USER
+hadoop
+
+Challenge:
+----------
+
+Create a Script named : env.sh
+Display a sentence
+Include the computer name, user's name, home directory
+
+env.sh:
+--------
+#!/usr/bin/env bash
+echo "The computer's name is $HOSTNAME, the user's name is $USER, AND THE home directory is $HOME"
+exit 0
+
+
+$ ./env.sh
+The computer's name is hadoop, the user's name is hadoop, AND THE home directory is /home/hadoop
+
+
+Function Example:
+-------------------
+#!/usr/bin/env bash
+
+function Hello(){
+  echo "Hello!"
+}
+
+Goodbye(){
+  echo "Goodbye!"
+}
+
+echo "Calling the Hello function"
+Hello
+
+echo "Calling the Goodbye function"
+Goodbye
+# Do not call like Goodbye()
+exit 0
+#define the function first, then call it later
+
+
+$ ./func.sh
+Calling the Hello function
+Hello!
+Calling the Goodbye function
+Goodbye!
+
+
+// Function with Parameters example
+#!/usr/bin/env bash
+
+function Hello(){
+  local LNAME=$1
+  echo "Hello! $LNAME"
+}
+
+Goodbye(){
+  echo "Goodbye! $1"
+}
+
+echo "Calling the Hello function"
+Hello Steve
+
+echo "Calling the Goodbye function"
+Goodbye David
+
+exit 0
+
+
+
+$ ./func.sh
+Calling the Hello function
+Hello! Steve
+Calling the Goodbye function
+Goodbye! David
+
+
+//pipe operation example:
+#!/usr/bin/env bash
+
+FILES=`ls -1 | sort -r | head -3`
+COUNT=1
+
+for FILE in $FILES
+do
+  echo "FILE #$COUNT : $FILE"
+  ((count++))
+done
+
+exit 0
+
+
+
+output:
+----------
+$ ./pipe.sh
+FILE #COUNT : whileexa.sh
+FILE #COUNT : vars.sh
+FILE #COUNT : sport.sh
+
+
+Challenge:
+----------
+
+Create a script named pfunc.sh
+Create two functions in the script:
+	a) GetFiles, 
+	b) ShowFiles
+	
+GetFiles returns the first 10 files in the directory
+
+pfunch.sh:
+-----------
+#!/usr/bin/env bash
+function GetFiles(){
+  FILES=`ls -1 | sort | head -10`
+}
+
+function ShowFiles(){
+  local COUNT=1
+  for FILE in $@
+  do
+    echo "FILE #$COUNT : $FILE"
+    ((COUNT++))
+  done
+}
+
+GetFiles
+ShowFiles $FILES
+
+exit 0
+
+output:
+-------
+$ ./pfunch.sh
+FILE #1 : counter.sh
+FILE #2 : env.sh
+FILE #3 : for.sh
+FILE #4 : func.sh
+FILE #5 : greeting.sh
+FILE #6 : hello.sh
+FILE #7 : if.sh
+FILE #8 : params.sh
+FILE #9 : pfunch.sh
+FILE #10 : pipe.sh
+
+
+File Example:
+--------------
+
+names.txt:
+----------
+Ravi
+Kumar
+Aradhana
+Siva
+Karthikeyan
+Dhanush
+Viswanathan
+SelvaKumar
+Ulagappan
+
+fileReader.sh:
+---------------
+#!/usr/bin/env bash
+COUNT=1
+
+while IFS="" read -r LINE
+do
+  echo "LINE $COUNT : $LINE"
+  ((COUNT++))
+done < "$1"
+
+exit 0
+
+
+//IFS means Internal Field Separator \t \n ,
+// execute the script and pass names.txt as input argument / parameter
+$ ./fileReader.sh names.txt
+LINE 1 : Ravi
+LINE 2 : Kumar
+LINE 3 : Aradhana
+LINE 4 : Siva
+LINE 5 : Karthikeyan
+LINE 6 : Dhanush
+LINE 7 : Viswanathan
+LINE 8 : SelvaKumar
+LINE 9 : Ulagappan
+
+
+// create a file using redirection operators
+
+ $ ./fileReader.sh names.txt > output1.txt  // overwrite / create 
+ $ ./fileReader.sh names.txt >> output1.txt // append
+ $ cat output1.txt
+LINE 1 : Ravi
+LINE 2 : Kumar
+LINE 3 : Aradhana
+LINE 4 : Siva
+LINE 5 : Karthikeyan
+LINE 6 : Dhanush
+LINE 7 : Viswanathan
+LINE 8 : SelvaKumar
+LINE 9 : Ulagappan
+LINE 1 : Ravi
+LINE 2 : Kumar
+LINE 3 : Aradhana
+LINE 4 : Siva
+LINE 5 : Karthikeyan
+LINE 6 : Dhanush
+LINE 7 : Viswanathan
+LINE 8 : SelvaKumar
+LINE 9 : Ulagappan
+
+
+
+// cksum of a file
+//whether the file is tampered or not
+
+hadoop@hadoop:~/Desktop/vow/shellscript$ cat  names.txt
+Ravi
+Kumar
+Aradhana
+Siva
+Karthikeyan
+Dhanush
+Viswanathan
+SelvaKumar
+Ulagappan
+
+hadoop@hadoop:~/Desktop/vow/shellscript$ cksum names.txt  // original
+4016456064 78 names.txt  // 3 parameters checksum value, filesize,filename
+
+hadoop@hadoop:~/Desktop/vow/shellscript$ atom names.txt
+Ravi
+Kumar
+Aradhana
+Siva
+Karthikeyan
+Dhanush
+Viswanaathan // added one extra 'a'
+SelvaKumar
+Ulagappan
+
+hadoop@hadoop:~/Desktop/vow/shellscript$ cksum names.txt
+783674190 79 names.txt  // because of file tampered, the cksum value changed
+
+
+hadoop@hadoop:~/Desktop/vow/shellscript$ atom names.txt
+Ravi
+Kumar
+Aradhana
+Siva
+Karthikeyan
+Dhanush
+Viswanathan // removed extra 'a'
+SelvaKumar
+Ulagappan
+
+hadoop@hadoop:~/Desktop/vow/shellscript$ cksum names.txt
+4016456064 78 names.txt  // file is not tampered - i mean transported without any corruption, or modification
+
+4016456064 -- value should be sent via e-mail. that number should match before and after tranfer
+
+
+Challenge:
+----------
+Create a script named read3.sh
+Have it read a file name passed as a parameter
+It should only display the first 3 lines, with count
+
+read3.sh:
+--------
+#!/usr/bin/env bash
+COUNT=1
+
+while IFS="" read -r LINE
+do
+  echo "LINE $COUNT : $LINE"
+  if [ $COUNT -ge 3 ]
+  then
+    break
+  fi
+  ((COUNT++))
+done < "$1"
+
+exit 0
+
+output:
+--------
+$ ./read3.sh names.txt
+LINE 1 : Ravi
+LINE 2 : Kumar
+LINE 3 : Aradhana
+
+
+delayexa.sh:
+-------------
+#!/usr/bin/env bash
+DELAY=$1
+if [ -z $DELAY ]
+then
+  echo "You must supply a delay"
+  exit 1
+fi
+
+echo "Going to sleep for $DELAY seconds"
+sleep $DELAY
+echo "We are awake now."
+exit 0
+
+
+
+// put & at the end.
+$ ./delayexa.sh 5 & 
+[1] 5833 // process id of the script running in background
+hadoop@hadoop:~/Desktop/vow/shellscript$ Going to sleep for 5 seconds
+We are awake now.
+
+[1]+  Done                    ./delayexa.sh 5
+
+
+output:
+-------
+$ ./delayexa.sh 5
+Going to sleep for 5 seconds
+We are awake now.
+
+
+
+
+proc.sh:
+---------
+
+#!/usr/bin/env bash
+STATUS=0
+
+if [ -z $1 ]
+then
+  echo "Please supply a PID"
+  exit 1
+fi
+
+echo "Watching PID = $1"
+
+while [ $STATUS -eq 0 ]
+do
+  ps $1 > /dev/null
+  STATUS=$?
+done
+echo "Process $1 has terminated"
+exit 0
+
+
+// open a new terminal window, and start nano editor
+$ nano a
+
+
+$ ps -a
+  PID TTY          TIME CMD
+ 5971 pts/1    00:00:00 nano // see the process id for nano is 5971
+ 5973 pts/0    00:00:00 ps
+
+
+// start the shell script 
+$ ./proc.sh 5971
+Watching PID = 5971
+
+// stop nano 
+Process 5971 has terminated
+
+
+
+// run the delayexa.sh script
+$ ./delayexa.sh 20 &
+[1] 8468
+hadoop@hadoop:~/Desktop/vow/shellscript$ Going to sleep for 20 seconds
+We are awake now.
+
+// pass the process id of delay program
+$ ./proc.sh 8468
+Watching PID = 8468
+Process 8468 has terminated
+
+
+
+//Get input from user
+prompt.sh:
+----------
+#!/usr/bin/env bash
+read -p "What is your first name? " NAME
+echo "Your name is : $NAME"
+exit 0
+
+
+output:
+-------
+$ ./prompt.sh
+What is your first name? sarega
+Your name is : sarega
+
+
+
+
+//validating user input in shell scripting:
+user.sh:
+---------
+#!/usr/bin/env bash
+VALID=0
+
+while [ $VALID -eq 0 ]
+do
+  read -p "Please enter your name and age : " NAME  AGE
+  if [[ ( -z $NAME ) || ( -z $AGE ) ]]
+  then
+    echo "Not enough parameters passed"
+    continue
+  elif [[ ! $NAME =~ ^[A-Za-z]+$ ]]
+  then
+    echo "Non Alpha characters detected [ $NAME ]"
+    continue
+  elif [[ ! $AGE =~ ^[0-9]+$ ]]
+  then
+    echo "Non digit characters detected [ $AGE ]"
+    continue
+  fi
+  VALID=1
+done
+echo "Name = $NAME and Age = $AGE"
+exit 0
+
+
+
+output:
+---------
+$ ./user.sh
+Please enter your name and age : SARA 40
+Name = SARA and Age = 40
+hadoop@hadoop:~/Desktop/vow/shellscript$ ./user.sh
+Please enter your name and age : 
+Not enough parameters passed
+Please enter your name and age : SA
+Not enough parameters passed
+Please enter your name and age : SA 3
+Name = SA and Age = 3
+
+
+//Challenge
+Create a script named guess.sh
+Set a global variable named COMPUTER to a number between 1 and 50
+Take input from the user
+if the user's input matches COMPUTER, they won
+
+
+
+guess.sh:
+---------
+#!/usr/bin/env bash
+COMPUTER=50
+PLAYING=0
+while [ $PLAYING -eq 0 ]
+do
+  read -p "What's your guess : " INPUT
+  if [ $INPUT -eq $COMPUTER ]
+  then
+    echo "You've won, the number was $COMPUTER"
+    exit 0
+  elif [ $INPUT -lt $COMPUTER ]
+  then
+    echo "You're too low"
+  fi
+done
+
+exit 0
+
+
+
+
+$ ./guess.sh
+What's your guess : 3
+You're too low
+What's your guess : 5
+You're too low
+What's your guess : 50
+You've won, the number was 50
