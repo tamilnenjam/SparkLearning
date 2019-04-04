@@ -1,0 +1,58 @@
+// Excluded all characters from each line and find the square root of sum of squares of each numbers
+
+$ cat charsAndNumbers.txt
+1,a,b,c,2,3,4
+2,3,4,x,y,z
+s,t,u,5,2
+m,n,8,10
+5,2,1,a,x,y
+7,a,x,2,6,h
+
+
+scala> val r1 = sc.textFile("/home/hadoop/Desktop/vow/charsAndNumbers.txt")
+
+// user defined function to extract only integers and exclude all characters
+ def toInt(s:String):Option[Int] ={
+		   try{
+				Some(s.toInt)
+		   }
+		   catch {
+				case e: Exception => None
+		   }
+       }
+      
+
+val r2 = r1.map(x => { 
+                       val fields = x.split(",")
+					   var s = 0
+					   for(f <- fields)
+						{
+							val currentNumber =  toInt(f).getOrElse(0) // calling UDF
+							if (currentNumber != 0){
+							 s = s + (currentNumber * currentNumber)
+							 }
+						 }
+						 
+						s
+                   })
+
+
+scala> r2.collect
+res1: Array[Int] = Array(30, 29, 29, 164, 30, 89)
+
+scala> val result = r2.reduce(_+_)
+result: Int = 371
+
+scala> val finalResult = scala.math.sqrt(result)
+finalResult: Double = 19.261360284258224
+
+scala> scala.math.sqrt( (1*1) + (2*2) + (3*3) + (4*4)
+     |  + (2*2) + (3*3) + (4*4) 
+     |  + (5*5) + (2*2)
+     |  + (8*8) + (10*10)
+     |  + (5*5) + (2*2) + (1*1) 
+     |  + (7*7) + (2*2) + (6*6))
+res8: Double = 19.261360284258224
+
+
+
