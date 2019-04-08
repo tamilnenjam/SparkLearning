@@ -1,0 +1,50 @@
+scala> dfEmp.orderBy(desc("salary")).show
++---+-------+------+------+------+
+| id|   name|gender|salary|deptid|
++---+-------+------+------+------+
+|106|Ayeesha|     f|  4000|    10|
+|105|  Priya|     f|  3600|    12|
+|104| Rashee|     f|  3500|    11|
+|109|  Vinay|     m|  3200|    10|
+|102| Suresh|     m|  3000|    12|
+|108| Arushi|     f|  2800|    12|
+|111| Shilpa|     f|  2600|    12|
+|110|  Kalai|     f|  2550|    11|
+|107|  Aruvi|     f|  2500|    11|
+|101|   Rani|     f|  2000|    11|
+|103|  Rahul|     m|  1250|    10|
+|100|   Ravi|     m|  1000|    10|
++---+-------+------+------+------+
+ 
+ 
+scala> dfEmp.where($"salary" < dfEmp.agg(max("salary")).first().getInt(0)).orderBy(desc("salary")).show(1)
++---+-----+------+------+------+
+| id| name|gender|salary|deptid|
++---+-----+------+------+------+
+|105|Priya|     f|  3600|    12|
++---+-----+------+------+------+
+only showing top 1 row
+
+// 2nd maximum salaried person
+hive> select * from emp where salary not in (select max(salary) from emp ) order by salary desc limit 1;
+105	Priya	f	3600	12
+
+hive> select * from (select * from emp sort by salary desc limit 2) result sort by salary limit 1;
+
+105	Priya	f	3600	12
+
+scala> dfEmp.orderBy(desc("Salary")).limit(2).orderBy("salary").show(1);
++---+-----+------+------+------+
+| id| name|gender|salary|deptid|
++---+-----+------+------+------+
+|105|Priya|     f|  3600|    12|
++---+-----+------+------+------+
+only showing top 1 row
+
+
+
+scala> dfEmp.orderBy(desc("Salary")).take(2)
+res87: Array[org.apache.spark.sql.Row] = Array([106,Ayeesha,f,4000,10], [105,Priya,f,3600,12])
+
+scala> dfEmp.orderBy(desc("Salary")).take(2)(1);
+res91: org.apache.spark.sql.Row = [105,Priya,f,3600,12]
