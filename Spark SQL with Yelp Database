@@ -1,0 +1,216 @@
+yelp
+
+scala> val biz = spark.read.json("hdfs://localhost:9000/sparkfiles/yelp.json")
+
+scala> biz.printSchema
+root
+ |-- address: string (nullable = true)
+ |-- attributes: struct (nullable = true)
+ |    |-- AcceptsInsurance: string (nullable = true)
+ |    |-- AgesAllowed: string (nullable = true)
+ |    |-- Alcohol: string (nullable = true)
+ |    |-- Ambience: string (nullable = true)
+ |    |-- BYOB: string (nullable = true)
+ |    |-- BYOBCorkage: string (nullable = true)
+ |    |-- BestNights: string (nullable = true)
+ |    |-- BikeParking: string (nullable = true)
+ |    |-- BusinessAcceptsBitcoin: string (nullable = true)
+ |    |-- BusinessAcceptsCreditCards: string (nullable = true)
+ |    |-- BusinessParking: string (nullable = true)
+ |    |-- ByAppointmentOnly: string (nullable = true)
+ |    |-- Caters: string (nullable = true)
+ |    |-- CoatCheck: string (nullable = true)
+ |    |-- Corkage: string (nullable = true)
+ |    |-- DietaryRestrictions: string (nullable = true)
+ |    |-- DogsAllowed: string (nullable = true)
+ |    |-- DriveThru: string (nullable = true)
+ |    |-- GoodForDancing: string (nullable = true)
+ |    |-- GoodForKids: string (nullable = true)
+ |    |-- GoodForMeal: string (nullable = true)
+ |    |-- HairSpecializesIn: string (nullable = true)
+ |    |-- HappyHour: string (nullable = true)
+ |    |-- HasTV: string (nullable = true)
+ |    |-- Music: string (nullable = true)
+ |    |-- NoiseLevel: string (nullable = true)
+ |    |-- Open24Hours: string (nullable = true)
+ |    |-- OutdoorSeating: string (nullable = true)
+ |    |-- RestaurantsAttire: string (nullable = true)
+ |    |-- RestaurantsCounterService: string (nullable = true)
+ |    |-- RestaurantsDelivery: string (nullable = true)
+ |    |-- RestaurantsGoodForGroups: string (nullable = true)
+ |    |-- RestaurantsPriceRange2: string (nullable = true)
+ |    |-- RestaurantsReservations: string (nullable = true)
+ |    |-- RestaurantsTableService: string (nullable = true)
+ |    |-- RestaurantsTakeOut: string (nullable = true)
+ |    |-- Smoking: string (nullable = true)
+ |    |-- WheelchairAccessible: string (nullable = true)
+ |    |-- WiFi: string (nullable = true)
+ |-- business_id: string (nullable = true)
+ |-- categories: string (nullable = true)
+ |-- city: string (nullable = true)
+ |-- hours: struct (nullable = true)
+ |    |-- Friday: string (nullable = true)
+ |    |-- Monday: string (nullable = true)
+ |    |-- Saturday: string (nullable = true)
+ |    |-- Sunday: string (nullable = true)
+ |    |-- Thursday: string (nullable = true)
+ |    |-- Tuesday: string (nullable = true)
+ |    |-- Wednesday: string (nullable = true)
+ |-- is_open: long (nullable = true)
+ |-- latitude: double (nullable = true)
+ |-- longitude: double (nullable = true)
+ |-- name: string (nullable = true)
+ |-- postal_code: string (nullable = true)
+ |-- review_count: long (nullable = true)
+ |-- stars: double (nullable = true)
+ |-- state: string (nullable = true)
+
+
+scala>  biz.createOrReplaceTempView("biz")
+
+scala> spark.sql("select count(1) as businesses from biz").show
++----------+                                                                    
+|businesses|
++----------+
+|    209393|
++----------+
+
+scala> spark.sql("select state, count(1) as businesses from biz group by state").show(10)
++-----+----------+                                                              
+|state|businesses|
++-----+----------+
+|   AZ|     60803|
+|   SC|      1328|
+|   OR|         1|
+|   VA|         1|
+|   QC|     10233|
+|   BC|         2|
+|   MI|         2|
+|   NV|     39084|
+|   WI|      5525|
+|   CA|        23|
++-----+----------+
+only showing top 10 rows
+
+
+scala> spark.sql("select state, count(1) as businesses from biz group by state order by businesses desc").show(10)
++-----+----------+                                                              
+|state|businesses|
++-----+----------+
+|   AZ|     60803|
+|   NV|     39084|
+|   ON|     36627|
+|   OH|     16392|
+|   NC|     16218|
+|   PA|     12376|
+|   QC|     10233|
+|   AB|      8682|
+|   WI|      5525|
+|   IL|      2034|
++-----+----------+
+only showing top 10 rows
+
+
+scala> spark.sql("select name,stars,review_count, city,state from biz where stars = 5.0").show(10)
++--------------------+-----+------------+----------+-----+
+|                name|stars|review_count|      city|state|
++--------------------+-----+------------+----------+-----+
+|   Carlos Santo, NMD|  5.0|           4|Scottsdale|   AZ|
+|             Felinus|  5.0|           5|  Montreal|   QC|
+|Junction Tire & A...|  5.0|          18|      Mesa|   AZ|
+|Chinook Landscapi...|  5.0|           3|   Calgary|   AB|
+|Dependable Brakes...|  5.0|           5|Pittsburgh|   PA|
+|      Desert Storage|  5.0|           5| Henderson|   NV|
+|      GK's Vapor Pub|  5.0|           8|  Surprise|   AZ|
+|Christ's Church o...|  5.0|           4|    Anthem|   AZ|
+|Annette Thomas Ha...|  5.0|           7| Las Vegas|   NV|
+|           Local Pet|  5.0|           3|Pittsburgh|   PA|
++--------------------+-----+------------+----------+-----+
+
+
+scala> spark.sql("select state, sum(review_count) as reviews from biz group by state").show(10)
++-----+-------+                                                                 
+|state|reviews|
++-----+-------+
+|   AZ|2403606|
+|   SC|  27406|
+|   OR|      9|
+|   VA|     27|
+|   QC| 204199|
+|   BC|      6|
+|   MI|     25|
+|   NV|2702841|
+|   WI| 147463|
+|   CA|    363|
++-----+-------+
+only showing top 10 rows
+
+
+scala> spark.sql("select stars, count(1) as businesses from biz group by stars").show(10)
++-----+----------+                                                              
+|stars|businesses|
++-----+----------+
+|  3.5|     38079|
+|  4.5|     29940|
+|  2.5|     21435|
+|  1.0|      5898|
+|  4.0|     39199|
+|  3.0|     28634|
+|  2.0|     13124|
+|  1.5|      6004|
+|  5.0|     27080|
++-----+----------+
+
+
+scala> spark.sql("select state, avg(review_count) as avg_reviews from biz group by state").show(10)
++-----+------------------+                                                      
+|state|       avg_reviews|
++-----+------------------+
+|   AZ| 39.53104287617387|
+|   SC|20.637048192771083|
+|   OR|               9.0|
+|   VA|              27.0|
+|   QC|19.954949672627773|
+|   BC|               3.0|
+|   MI|              12.5|
+|   NV| 69.15466687135401|
+|   WI|26.690135746606334|
+|   CA|15.782608695652174|
++-----+------------------+
+only showing top 10 rows
+
+
+scala> spark.sql("select state,round(avg(review_count)) as avg_reviews from biz group by state order by avg_reviews desc").show(5)
++-----+-----------+                                                             
+|state|avg_reviews|
++-----+-----------+
+|   TX|      184.0|
+|   NV|       69.0|
+|   AR|       59.0|
+|   HI|       51.0|
+|   AZ|       40.0|
++-----+-----------+
+
+scala> spark.sql("select name,stars,review_count from biz where city='Las Vegas' order by stars desc, review_count desc limit 5").show()
++--------------------+-----+------------+                                       
+|                name|stars|review_count|
++--------------------+-----+------------+
+|        Brew Tea Bar|  5.0|        1827|
+|Paranormal - Mind...|  5.0|         979|
+|            Eco-Tint|  5.0|         853|
+|      Zenaida's Cafe|  5.0|         717|
+|      Carpet Monkeys|  5.0|         688|
++--------------------+-----+------------+
+
+scala> spark.sql("select name,stars,review_count, state,hours from biz where hours.wednesday = '7:0-16:0'  limit 5").show()
++--------------------+-----+------------+-----+--------------------+            
+|                name|stars|review_count|state|               hours|
++--------------------+-----+------------+-----+--------------------+
+|Nevada House of Hose|  2.5|           3|   NV|[7:0-16:0, 7:0-16...|
+|     Karb King Karbs|  1.0|          11|   PA|[7:0-16:0, 7:0-16...|
+|Steinberg Diagnos...|  3.0|          96|   NV|[7:0-16:0, 7:0-16...|
+|Sonora Quest Labo...|  2.5|          35|   AZ|[7:0-16:0, 0:0-0:...|
+|Mj Parker Auto Tr...|  3.0|           9|   AZ|[7:0-16:0, 7:0-16...|
++--------------------+-----+------------+-----+--------------------+
+
+
